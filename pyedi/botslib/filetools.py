@@ -3,7 +3,11 @@
 # **********************************************************/**
 import os
 import codecs
+import pickle
 
+from pyedi.botslib import (
+    config,
+)
 
 def join(*paths):
     """Does does more as join.....
@@ -11,7 +15,7 @@ def join(*paths):
         - if path is not absolute, interpretate this as relative from bots directory.
         - normalize"""
     return os.path.normpath(
-        os.path.join(botsglobal.ini.get("directories", "botspath"), *paths)
+        os.path.join(config.get(["directories", "botspath"]), *paths)
     )
 
 
@@ -24,7 +28,7 @@ def dirshouldbethere(path):
 
 def abspath(soort, filename):
     """ get absolute path for internal files; path is a section in bots.ini """
-    directory = botsglobal.ini.get("directories", soort)
+    directory = config.get(["directories", soort])
     return join(directory, filename)
 
 
@@ -33,7 +37,7 @@ def abspathdata(filename):
     if "/" in filename:  # if filename already contains path
         return join(filename)
     else:
-        directory = botsglobal.ini.get("directories", "data")
+        directory = config.get(["directories", "data"])
         datasubdir = filename[:-3]
         if not datasubdir:
             datasubdir = "0"

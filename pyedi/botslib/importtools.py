@@ -5,7 +5,7 @@ import importlib
 from gettext import gettext as _
 
 from pyedi.botslib.exceptions import BotsImportError, ScriptImportError
-from pyedi.botslib.config import config, PediConfiguration
+from pyedi.botslib.config import config, PyEdiConfig
 from pyedi.botslib.filetools import join
 from pyedi.botslib.logger import logger
 
@@ -14,7 +14,7 @@ def botsbaseimport(modulename):
     """Do a dynamic import.
         Errors/exceptions are handled in calling functions.
     """
-    return importlib.import_module(modulename, "bots")
+    return importlib.import_module(modulename)
 
 
 def botsimport(*args):
@@ -23,14 +23,14 @@ def botsimport(*args):
         if not found or error in module: raise
     """
     modulepath = ".".join(
-        (config.get(PediConfiguration.USERSYSIMPORTPATH),) + args
+        (config.get([PyEdiConfig.DIRECTORIES, PyEdiConfig.USERSYSIMPORTPATH]),) + args
     )  # assemble import string
     # assemble abs filename for errortexts; note that 'join' is function in this script-file.
     modulefile = join(
-        config.get([PediConfiguration.DIRECTORIES, PediConfiguration.USERSYSABS]), *args
+        config.get([PyEdiConfig.DIRECTORIES, PyEdiConfig.USERSYSABS]), *args
     )
     # check if previous import failed (no need to try again).This eliminates eg lots of partner specific imports.
-    if modulepath in config.get(PediConfiguration.NOT_IMPORT):
+    if modulepath in config.get([PyEdiConfig.NOT_IMPORT]):
         logger.debug(
             _('No import of module "%(modulefile)s".'), {"modulefile": modulefile}
         )
@@ -38,9 +38,9 @@ def botsimport(*args):
             _('No import of module "%(modulefile)s".'), {"modulefile": modulefile}
         )
     try:
-        module = botsbaseimport(modulepath)
+        module = botsbaseimport(modulepath.lower())
     except ImportError as msg:
-        config.add(PediConfiguration.NOT_IMPORT, modulepath)
+        config.add(PyEdiConfig.NOT_IMPORT, modulepath)
         logger.debug(
             _('No import of module "%(modulefile)s": %(txt)s.'),
             {"modulefile": modulefile, "txt": msg},

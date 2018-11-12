@@ -161,7 +161,6 @@ celerybeat-schedule
 
 # Environments
 .env
-.venv
 env/
 venv/
 ENV/
@@ -181,3 +180,4 @@ venv.bak/
 # mypy
 .mypy_cache/
 
+usersys/

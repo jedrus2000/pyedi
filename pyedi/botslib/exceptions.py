@@ -15,7 +15,7 @@ def txtexc():
     """ Process last exception, get an errortext.
         Errortext should be valid unicode.
     """
-    if config.get(["settings", "debug"], False):
+    if config.get(["settings", "debug"]):
         return safe_unicode(traceback.format_exc(limit=None))
     else:
         terug = safe_unicode(traceback.format_exc(limit=0))

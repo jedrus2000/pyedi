@@ -32,6 +32,7 @@ ERROR_IN_GRAMMAR = "BOTS_error_1$%3@7#!%+_)_+[{]}"
 # no record should be called like this ;-))
 
 
+
 def grammarread(editype, grammarname, typeofgrammarfile):
     """ reads/imports a grammar (dispatch function for class Grammar and subclasses).
         typeofgrammarfile indicates some differences in reading/syntax handling:
@@ -41,7 +42,7 @@ def grammarread(editype, grammarname, typeofgrammarfile):
         grammars are imported from usersys/<'typeofgrammarfile'>/<editype>/<grammarname>.
     """
     try:
-        classtocall = globals()[editype]
+        classtocall = globals()[editype.lower()]
     except KeyError:
         raise GrammarError(
             _(

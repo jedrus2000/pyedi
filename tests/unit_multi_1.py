@@ -14,7 +14,7 @@ import utilsunit
 # import bots.botslib as botslib
 # import bots.botsinit as botsinit
 # import bots.botsglobal as botsglobal
-import pyedi.pyedi_translator as transform
+import pyedi.translator as transform
 
 # from bots.botsconfig import *
 

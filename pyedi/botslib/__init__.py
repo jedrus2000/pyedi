@@ -41,4 +41,15 @@ from .confirmrules import (
     globalcheckconfirmrules,
     checkconfirmrules,
 )
-from .database import unique, query
+from .database import (
+    unique,
+    query,
+    changeq,
+    insertta,
+)
+
+from .globals import (
+    setrouteid,
+    getrouteid,
+)
+

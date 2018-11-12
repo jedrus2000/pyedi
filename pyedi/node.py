@@ -293,6 +293,11 @@ class Node(object):
                 else:  # no child has given a valid return
                     return 0
 
+    @staticmethod
+    @property
+    def checklevel(self):
+        return config.get(['settings', 'checklevel'])
+
     def get(self, *mpaths):
         """ get value of a field in a record from a edi-message
             mpath is xpath-alike query to identify the record/field

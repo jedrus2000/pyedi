@@ -30,6 +30,7 @@ from .botsconfig import *
 Base library for bots. Botslib should not import code from other Bots-modules.
 """
 MAXINT = (2 ** 31) - 1
+"""
 # **********************************************************/**
 # **************getters/setters for some globals***********************/**
 # **********************************************************/**
@@ -43,7 +44,7 @@ def getrouteid():
     return botsglobal.routeid
 
 
-"""
+
 #**********************************************************/**
 #***************** class  Transaction *********************/**
 #**********************************************************/**
