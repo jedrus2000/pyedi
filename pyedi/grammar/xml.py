@@ -1,16 +1,28 @@
-from .xml import Xml
+from gettext import gettext as _
+
+from pyedi.botslib import GrammarError
+from .grammar import Grammar
 
 
-class XmlNoCheck(Xml):
+class Xml(Grammar):
+    def class_specific_tests(self):
+        if not self.syntax["envelope"] and self.syntax["merge"]:
+            raise GrammarError(
+                _(
+                    'Grammar "%(grammar)s": in this xml grammar merge is "True" but no (user) enveloping is specified. This will lead to invalid xml files'
+                ),
+                {"grammar": self.grammarname},
+            )
+
     defaultsyntax = {
         "attributemarker": "__",
         "charset": "utf-8",
         "checkcharsetin": "strict",  # strict, ignore or botsreplace (replace with char as set in bots.ini).
         "checkcharsetout": "strict",  # strict, ignore or botsreplace (replace with char as set in bots.ini).
-        "checkunknownentities": False,
+        "checkunknownentities": True,
         "contenttype": "text/xml ",
         "decimaal": ".",
-        "DOCTYPE": "",  # doctype declaration to use in xml header. DOCTYPE = 'mydoctype SYSTEM "mydoctype.dtd"'  will lead to: <!DOCTYPE mydoctype SYSTEM "mydoctype.dtd">
+        "DOCTYPE": "",  # doctype declaration to use in xml header. 'DOCTYPE': 'mydoctype SYSTEM "mydoctype.dtd"'  will lead to: <!DOCTYPE mydoctype SYSTEM "mydoctype.dtd">
         "envelope": "",
         # additional character entities to resolve when parsing XML; mostly html
         # character entities. Example:
@@ -26,7 +38,7 @@ class XmlNoCheck(Xml):
         # of tuples, each tuple consists of type of instruction and text for
         # instruction.
         "processing_instructions": None,
-        # Example: processing_instructions': [('xml-stylesheet' ,'href="mystylesheet.xsl" type="text/xml"'),('type-of-ppi' ,'attr1="value1" attr2="value2"')]
+        # Example: 'processing_instructions': [('xml-stylesheet' ,'href="mystylesheet.xsl" type="text/xml"'),('type-of-ppi' ,'attr1="value1" attr2="value2"')]
         # leads to this output in xml-file:  <?xml-stylesheet
         # href="mystylesheet.xsl" type="text/xml"?><?type-of-ppi attr1="value1"
         # attr2="value2"?>
@@ -45,7 +57,7 @@ class XmlNoCheck(Xml):
         "sfield_sep": "",
         "skip_char": "",
         # bots internal, never change/overwrite
-        "has_structure": False,  # is True, read structure, recorddef, check these
+        "has_structure": True,  # is True, read structure, recorddef, check these
         "checkcollision": False,
         "lengthnumericbare": False,
         "stripfield_sep": False,
