@@ -1,0 +1,100 @@
+ISA*00*          *00*          *01*006918296      *01*79835154       *160921*1337*U*00401*000000013*0*P*|~
+GS*CI*006918296*79835154*20160921*1337*13*X*004010~
+ST*811*2678~
+BIG*20160919*231132012420160919*****DI~
+NTE*GEN*If your bill reflects that you owe a Balance Forward  you must make a~
+NTE*GEN*payment immediately in order to avoid collection activities.  You must~
+NTE*GEN*pay a minimum of $14.53 by your due date to avoid disconnection of~
+NTE*GEN*your local service.  All other charges should be paid by your due date~
+NTE*GEN*to keep your account current.~
+NTE*GEN*The Federal Communications Commission (FCC)  in~
+NTE*GEN*conjunction with the Federal Trade Commission~
+NTE*GEN*(FTC)  has established a National Do Not Call~
+NTE*GEN*Registry for consumers who wish to avoid receiving~
+NTE*GEN*many kinds of telemarketing calls.  Customers~
+NTE*GEN*previously registered with State Do Not Call~
+NTE*GEN*registries should be registered with the National~
+NTE*GEN*Registry.  Telemarketers who continue to call~
+NTE*GEN*consumers who have placed their telephone numbers~
+NTE*GEN*on the registry or had previously registered for~
+NTE*GEN*any State Do Not Call list are subject to~
+NTE*GEN*substantial fines.  In addition  the FCC amended~
+NTE*GEN*its rules to require  among other things  that~
+NTE*GEN*telemarketers transmit their Caller ID information~
+NTE*GEN*and to unblock their numbers.  To sign up a~
+NTE*GEN*residential number for the National Do-Not-Call~
+NTE*GEN*Registry or to verify a number is included on the~
+NTE*GEN*Registry  visit www.donotcall.gov or call the~
+NTE*GEN*FTC's toll-free number at 1-888-382-1222  (TTY~
+NTE*GEN*users  1-866-290-4236)  from the number to be~
+NTE*GEN*registered.  Consumers must re-register if they~
+NTE*GEN*change their telephone number.  Numbers remain on~
+NTE*GEN*the Do-Not-Call List until a customer actively~
+NTE*GEN*deletes the number from the Registry by calling~
+NTE*GEN*Additional Notification for Customers Making~
+NTE*GEN*Customers making telephone solicitations can~
+NTE*GEN*obtain the federal Do Not Call requirements by~
+NTE*GEN*accessing the FCC's Rules and Regulations~
+NTE*GEN*Implementing the Telephone Consumer Protection Act~
+NTE*GEN*of 1991 at~
+NTE*GEN*http://www.fcc.gov/cgb/policy/telemarketing.html~
+NTE*GEN*47 CFR Section 64.1200; and the FTC's amended~
+NTE*GEN*Telemarketing Sales Rule at~
+NTE*GEN*http://www.ftc.gov/bcp/rulemaking/tsr/  16 CFR~
+NTE*GEN*Part 310.  Telemarketers can access the~
+NTE*GEN*Do-Not-Call list at~
+NTE*GEN*https://telemarketing.donotcall.gov/~
+REF*12*2311320124~
+REF*14*2311320124~
+REF*11*23113201240712165~
+REF*CR*1016~
+ITD*18*****20161013~
+N1*PE*FRONTIER~
+N3*P.O. BOX 20550~
+N4*ROCHESTER*NY*14602-0550~
+N1*PR*SPRINT~
+N3*C/O DATA SCRIBE*PO BOX 7068~
+N4*OVERLAND PARK*KS*662070000~
+HL*1**1*1~
+LX*1~
+NM1*SJ*2*FRONTIER*****42*0086~
+PER*BI**TE*800-921-8102~
+PER*OC**TE*800-921-8101~
+PER*AR**TE*800-921-8101~
+TXI*FD*0.15*****A***Federal Tax~
+TXI*ST*0.3*****A***MI St Tel Sls~
+TXI*OH*0.05*****A***MI Intra Rstrt Srchg~
+HL*2*1*4*1~
+IT1*1*M4*7.19**SV*2600*ZZ*2~
+PID*F*ZZ*AS*SC*Late Payment~
+HL*3*2*7*1~
+LX*2~
+SI*TI*EN*2311320124*TN*2311320124*BN*2311320124~
+HL*4*3*8*0~
+SLN*1**I*1*EA*7.19**I~
+SI*TI*SC*LTFEE~
+PID*X*ZZ*AS*SC*Late Payment Fee~
+HL*5*1*4*1~
+IT1**1*M4*5**SV*0200*ZZ*1~
+PID*F*ZZ*AS*SC*Monthy Charges~
+HL*6*5*7*1~
+LX*3~
+SI*TI*EN*2311320124*TN*2311320124*BN*2311320124~
+DTM*150*20160919~
+DTM*151*20161018~
+HL*7*6*8*0~
+SLN*2**I*1*EA*5**I~
+SI*TI*SC*FORB~
+PID*X*ZZ*AS*SC*Foreign Exchange Listing~
+TDS*1269~
+BAL*P*PB*35.68~
+BAL*C*NA*0.00~
+BAL*M*TP*-22.84~
+BAL*A*NA*0.00~
+BAL*M*J9*12.84~
+BAL*M*PB*12.69~
+BAL*M*TT*25.53~
+CTT*2~
+SE*96*2678~
+GE*1*13~
+IEA*1*000000013~

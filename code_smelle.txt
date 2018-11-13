@@ -1,0 +1,3 @@
+- rozbic grammar.py na osobne komunikaty jak w inmessage/_init_.py
+- implementacja DB - zamarkowane jako TODO
+- implementacja lookup_translation - zamarkowane jako TODO
