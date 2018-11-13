@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-import json as simplejson
-import sys
 import time
 import decimal
 
@@ -18,56 +16,20 @@ try:
 except ImportError:
     from xml.etree import ElementInclude as ETI
 
-from collections import OrderedDict
-
 from pyedi.botslib.consts import *
 from pyedi.botslib import (
-    botsbaseimport,
-    abspath,
-    writedata_pickled,
-    indent_xml,
-    opendata_bin,
     OutMessageError,
     opendata,
-    abspathdata,
-    txtexc,
     get_relevant_text_for_UnicodeError,
-    log_session,
-    InMessageError,
-    BotsError,
     BotsImportError,
-    FileTooLargeError,
-    checkconfirmrules,
-    GotoException,
-    TranslationNotFoundError,
-    botsimport,
-    readdata_pickled,
-    readdata_bin,
-    OldTransaction,
-    config,
     logger,
-    logmap,
-    runscript,
 )
 import pyedi.node as node
 import pyedi.message as message
 import pyedi.grammar as grammar
 
 
-def outmessage_init(**ta_info):
-    """ dispatch function class Outmessage or subclass
-        ta_info: needed is editype, messagetype, filename, charset, merge
-    """
-    try:
-        classtocall = globals()[ta_info["editype"]]
-    except KeyError:
-        raise OutMessageError(
-            _("Unknown editype for outgoing message: %(editype)s"), ta_info
-        )
-    return classtocall(ta_info)
-
-
-class Outmessage(message.Message):
+class OutMessage(message.Message):
     """ abstract class; represents a outgoing edi message.
         subclassing is necessary for the editype (csv, edi, x12, etc)
         A tree of nodes is build form the mpaths received from put()or putloop(). tree starts at self.root.
@@ -84,7 +46,7 @@ class Outmessage(message.Message):
     """
 
     def __init__(self, ta_info):
-        super(Outmessage, self).__init__(ta_info)
+        super(OutMessage, self).__init__(ta_info)
         # message tree; build via put()-interface in mappingscript. Initialise with empty dict
         self.root = node.Node(record={})
 
@@ -92,7 +54,7 @@ class Outmessage(message.Message):
         """ read grammar for a message/envelope.
             (try to) read the topartner dependent grammar syntax.
         """
-        super(Outmessage, self).messagegrammarread(typeofgrammarfile)
+        super(OutMessage, self).messagegrammarread(typeofgrammarfile)
         # read partner-syntax. Use this to always overrule values in self.ta_info
         if self.ta_info.get("frompartner"):
             try:
@@ -145,7 +107,7 @@ class Outmessage(message.Message):
             #'write back' the number of messages. Tricky thing here is that sometimes such a structure is indeed one message: eg csv without BOTS iD.
             # in general: when only one type of record in recorddefs (mind: for xml this is not useful) no not writeback the count as nrofmessages
             # for now: always write back unless csv of fixed.
-            if not isinstance(self, (csv, fixed)):
+            if self.__class__.__name__ not in ['Csv', 'Fixed']:
                 self.ta_info["nrmessages"] = self.nrmessagewritten
             self._closewrite()
 
@@ -412,7 +374,7 @@ class Outmessage(message.Message):
             return the formatted value
         """
         if field_definition[BFORMAT] == "A":
-            if isinstance(self, fixed):  # check length fields in variable records
+            if self.__class__.__name__ == 'Fixed':  # check length fields in variable records
                 if (
                     field_definition[FORMAT] == "AR"
                 ):  # if field format is alfanumeric right aligned
@@ -742,7 +704,7 @@ class Outmessage(message.Message):
                 # use escape (edifact, tradacom). For x12 is warned if content contains separator
                 for char in field[VALUE]:
                     if char in escapechars:
-                        if isinstance(self, x12):
+                        if self.__class__.__name__ == 'X12':
                             if self.ta_info["replacechar"]:
                                 char = self.ta_info["replacechar"]
                             else:
@@ -766,587 +728,3 @@ class Outmessage(message.Message):
 
     def _getescapechars(self):
         return ""
-
-
-class fixed(Outmessage):
-    def _initfield(self, field_definition):
-        if field_definition[BFORMAT] == "A":
-            if (
-                field_definition[FORMAT] == "AR"
-            ):  # if field format is alfanumeric right aligned
-                value = "".rjust(field_definition[MINLENGTH])
-            else:
-                value = "".ljust(
-                    field_definition[MINLENGTH]
-                )  # add spaces (left, because A-field is right aligned)
-        elif field_definition[BFORMAT] == "D":
-            value = "".ljust(field_definition[MINLENGTH])  # add spaces
-        elif field_definition[BFORMAT] == "T":
-            value = "".ljust(field_definition[MINLENGTH])  # add spaces
-        else:  # numerics
-            if (
-                field_definition[BFORMAT] == "R"
-            ):  # floating point: use all decimals received
-                if (
-                    field_definition[FORMAT] == "RL"
-                ):  # if field format is numeric right aligned
-                    value = "0".ljust(field_definition[MINLENGTH])
-                elif (
-                    field_definition[FORMAT] == "RR"
-                ):  # if field format is numeric right aligned
-                    value = "0".rjust(field_definition[MINLENGTH])
-                else:
-                    value = "0".zfill(field_definition[MINLENGTH])
-            elif field_definition[BFORMAT] == "N":  # fixed decimals; round
-                value = str(
-                    decimal.Decimal("0").quantize(
-                        decimal.Decimal(10) ** -field_definition[DECIMALS]
-                    )
-                )
-                if (
-                    field_definition[FORMAT] == "NL"
-                ):  # if field format is numeric right aligned
-                    value = value.ljust(field_definition[MINLENGTH])
-                elif (
-                    field_definition[FORMAT] == "NR"
-                ):  # if field format is numeric right aligned
-                    value = value.rjust(field_definition[MINLENGTH])
-                else:
-                    value = value.zfill(field_definition[MINLENGTH])
-                value = value.replace(
-                    ".", self.ta_info["decimaal"], 1
-                )  # replace '.' by required decimal sep.
-            elif field_definition[BFORMAT] == "I":  # implicit decimals
-                dec_value = decimal.Decimal("0") * 10 ** field_definition[DECIMALS]
-                value = str(dec_value.quantize(NODECIMAL))
-                value = value.zfill(field_definition[MINLENGTH])
-        return value
-
-
-class idoc(fixed):
-    def __init__(self, ta_info):
-        super(idoc, self).__init__(ta_info)
-        self.recordnumber = (
-            0
-        )  # segment counter. For sequential recordnumbering in records.
-
-    def _canonicaltree(self, node_instance, structure):
-        self.headerrecordnumber = self.recordnumber
-        super(idoc, self)._canonicaltree(node_instance, structure)
-
-    def _canonicalfields(self, node_instance, record_definition):
-        if self.ta_info["automaticcount"]:
-            node_instance.record.update(
-                {
-                    "MANDT": self.ta_info["MANDT"],
-                    "DOCNUM": self.ta_info["DOCNUM"],
-                    "SEGNUM": str(self.recordnumber),
-                    "PSGNUM": str(self.headerrecordnumber),
-                    "HLEVEL": str(len(record_definition[MPATH])),
-                }
-            )
-        else:
-            node_instance.record.update(
-                {"MANDT": self.ta_info["MANDT"], "DOCNUM": self.ta_info["DOCNUM"]}
-            )
-        super(idoc, self)._canonicalfields(node_instance, record_definition)
-        self.recordnumber += (
-            1
-        )  # tricky. EDI_DC is not counted, so I count after writing.
-
-
-class var(Outmessage):
-    pass
-
-
-class csv(var):
-    def _getescapechars(self):
-        return self.ta_info["escape"]
-
-
-class edifact(var):
-    def _getescapechars(self):
-        terug = (
-            self.ta_info["record_sep"]
-            + self.ta_info["field_sep"]
-            + self.ta_info["sfield_sep"]
-            + self.ta_info["escape"]
-        )
-        if self.ta_info["version"] >= "4":
-            terug += self.ta_info["reserve"]
-        return terug
-
-
-class tradacoms(var):
-    def _getescapechars(self):
-        terug = (
-            self.ta_info["record_sep"]
-            + self.ta_info["field_sep"]
-            + self.ta_info["sfield_sep"]
-            + self.ta_info["escape"]
-            + self.ta_info["record_tag_sep"]
-        )
-        return terug
-
-    def writeall(self):
-        """ writeall is called for writing all 'real' outmessage objects; but not for enveloping.
-            writeall is call from transform.translate()
-        """
-        self.nrmessagewritten = 0
-        if not self.root.children:
-            raise OutMessageError(
-                _("No outgoing message")
-            )  # then there is nothing to write...
-        messagetype = self.ta_info["messagetype"]
-        for tradacomsmessage in self.root.getloop({"BOTSID": "STX"}, {"BOTSID": "MHD"}):
-            self.ta_info["messagetype"] = tradacomsmessage.get(
-                {"BOTSID": "MHD", "TYPE.01": None}
-            ) + tradacomsmessage.get({"BOTSID": "MHD", "TYPE.02": None})
-            self.messagegrammarread(typeofgrammarfile="grammars")
-            if not self.nrmessagewritten:
-                self._initwrite()
-            self.checkmessage(tradacomsmessage, self.defmessage)
-            self.checkforerrorlist()
-            self._write(tradacomsmessage)
-            self.nrmessagewritten += 1
-        self.ta_info["messagetype"] = messagetype
-        self._closewrite()
-        self.ta_info["nrmessages"] = self.nrmessagewritten
-
-
-class x12(var):
-    def _getescapechars(self):
-        terug = (
-            self.ta_info["record_sep"]
-            + self.ta_info["field_sep"]
-            + self.ta_info["sfield_sep"]
-        )
-        if self.ta_info["version"] >= "00403":
-            terug += self.ta_info["reserve"]
-        return terug
-
-
-class xml(Outmessage):
-    """ Some problems with right xml prolog, standalone, DOCTYPE, processing instructons: Different ET versions give different results.
-        Things work OK for python 2.7
-        celementtree in 2.7 is version 1.0.6, but different implementation in 2.6??
-        For python <2.7: do not generate standalone, DOCTYPE, processing instructions for encoding !=utf-8,ascii OR if elementtree package is installed (version 1.3.0 or bigger)
-    """
-
-    def _write(self, node_instance):
-        """ write normal XML messages (no envelope)"""
-        xmltree = ET.ElementTree(self._node2xml(node_instance))
-        root = xmltree.getroot()
-        self._xmlcorewrite(xmltree, root)
-
-    def envelopewrite(self, node_instance):
-        """ write envelope for XML messages"""
-        self._initwrite()
-        self.checkmessage(node_instance, self.defmessage)
-        self.checkforerrorlist()
-        xmltree = ET.ElementTree(self._node2xml(node_instance))
-        root = xmltree.getroot()
-        ETI.include(root)
-        self._xmlcorewrite(xmltree, root)
-        self._closewrite()
-
-    def _xmlcorewrite(self, xmltree, root):
-        if sys.version_info[0] == 2 and sys.version_info[1] == 6:
-            python26 = True
-        else:
-            python26 = False
-        if (
-            not python26 and self.ta_info["namespace_prefixes"]
-        ):  # Register any namespace prefixes specified in syntax
-            for eachns in self.ta_info["namespace_prefixes"]:
-                ET.register_namespace(eachns[0], eachns[1])
-        # xml prolog: always use.*********************************
-        # standalone, DOCTYPE, processing instructions: only possible in python >= 2.7 or if encoding is utf-8/ascii
-        if (
-            not python26
-            or self.ta_info["charset"] in ["us-ascii", "utf-8"]
-            or ET.VERSION >= "1.3.0"
-        ):
-            if self.ta_info["indented"]:
-                indentstring = b"\n"
-            else:
-                indentstring = b""
-            if self.ta_info["standalone"]:
-                standalonestring = 'standalone="%s" ' % (self.ta_info["standalone"])
-            else:
-                standalonestring = ""
-            processing_instruction = ET.ProcessingInstruction(
-                "xml",
-                'version="%s" encoding="%s" %s'
-                % (self.ta_info["version"], self.ta_info["charset"], standalonestring),
-            )
-            # do not use encoding here. gives double xml prolog; possibly because
-            # ET.ElementTree.write i used again by write()
-            self._outstream.write(ET.tostring(processing_instruction) + indentstring)
-            # doctype /DTD **************************************
-            if self.ta_info["DOCTYPE"]:
-                # ~ self._outstream.write(b'<!DOCTYPE %s>'%(self.ta_info['DOCTYPE']) + indentstring)
-                self._outstream.write(
-                    b"<!DOCTYPE "
-                    + self.ta_info["DOCTYPE"].encode("ascii")
-                    + b">"
-                    + indentstring
-                )
-            # processing instructions (other than prolog) ************
-            if self.ta_info["processing_instructions"]:
-                for eachpi in self.ta_info["processing_instructions"]:
-                    processing_instruction = ET.ProcessingInstruction(
-                        eachpi[0], eachpi[1]
-                    )
-                    # do not use encoding here. gives double xml prolog; possibly because
-                    # ET.ElementTree.write i used again by write()
-                    self._outstream.write(
-                        ET.tostring(processing_instruction) + indentstring
-                    )
-        # indent the xml elements
-        if self.ta_info["indented"]:
-            indent_xml(root)
-        # write tree to file; this is different for different python/elementtree versions
-        if python26 and ET.VERSION < "1.3.0":
-            xmltree.write(self._outstream, encoding=self.ta_info["charset"])
-        else:
-            xmltree.write(
-                self._outstream, encoding=self.ta_info["charset"], xml_declaration=False
-            )
-
-    def _node2xml(self, node_instance):
-        """ recursive method.
-        """
-        newnode = self._node2xmlfields(node_instance.record)
-        for childnode in node_instance.children:
-            newnode.append(self._node2xml(childnode))
-        return newnode
-
-    def _node2xmlfields(self, noderecord):
-        """ write record as xml-record-entity plus xml-field-entities within the xml-record-entity.
-            output is sorted according to grammar, attributes alfabetically.
-        """
-        recordtag = noderecord.pop("BOTSID")
-        del noderecord["BOTSIDnr"]
-        BOTSCONTENT = noderecord.pop("BOTSCONTENT", None)
-        # collect all values used as attributes from noderecord***************************
-        attributemarker = self.ta_info["attributemarker"]
-        attributedict = {}  # is a dict of dicts
-        for key, value in noderecord.items():
-            if attributemarker in key:
-                field, attribute = key.split(attributemarker, 1)
-                if not field in attributedict:
-                    attributedict[field] = {}
-                attributedict[field][attribute] = value
-                # ~ del noderecord[key]
-        # generate xml-record-entity***************************
-        xmlrecord = ET.Element(recordtag, attributedict.get(recordtag, {}))
-        # ***add BOTSCONTENT as the content of the xml-record-entity
-        xmlrecord.text = BOTSCONTENT
-        # generate the xml-field-entities within the xml-record-entity***************************
-        # loop over remaining fields in 'record': write these as subelements
-        for field_def in self.defmessage.recorddefs[recordtag]:
-            if (
-                attributemarker in field_def[ID]
-            ):  # skip fields that are marked as xml attributes
-                continue
-            content = noderecord.get(field_def[ID], None)
-            attributes = attributedict.get(field_def[ID], {})
-            if content is not None or attributes:
-                ET.SubElement(
-                    xmlrecord, field_def[ID], attributes
-                ).text = content  # add xml element to xml record
-        return xmlrecord
-
-    def _initwrite(self):
-        logger.debug('Start writing to file "%(filename)s".', self.ta_info)
-        self._outstream = opendata_bin(self.ta_info["filename"], "wb")
-
-
-class xmlnocheck(xml):
-    def _node2xmlfields(self, noderecord):
-        """ write record as xml-record-entity plus xml-field-entities within the xml-record-entity.
-            output is sorted alfabetically, attributes alfabetically.
-        """
-        recordtag = noderecord.pop("BOTSID")
-        del noderecord["BOTSIDnr"]
-        BOTSCONTENT = noderecord.pop("BOTSCONTENT", None)
-        # ***collect from noderecord all entities and attributes***************************
-        attributemarker = self.ta_info["attributemarker"]
-        attributedict = {}  # is a dict of dicts
-        for key, value in noderecord.items():
-            if attributemarker in key:
-                field, attribute = key.split(attributemarker, 1)
-                if not field in attributedict:
-                    attributedict[field] = {}
-                attributedict[field][attribute] = value
-            else:
-                if not key in attributedict:
-                    attributedict[key] = {}
-        # ***generate the xml-record-entity***************************
-        xmlrecord = ET.Element(
-            recordtag, attributedict.pop(recordtag, {})
-        )  # pop from attributedict->do not use later
-        # ***add BOTSCONTENT as the content of the xml-record-entity
-        xmlrecord.text = BOTSCONTENT
-        # ***generate the xml-field-entities within the xml-record-entity***************************
-        for key in sorted(attributedict.keys()):  # sorted: predictable output
-            ET.SubElement(xmlrecord, key, attributedict[key]).text = noderecord.get(key)
-        return xmlrecord
-
-
-class json(Outmessage):
-    def _initwrite(self):
-        super(json, self)._initwrite()
-        if self.multiplewrite:
-            self._outstream.write("[")
-
-    def _write(self, node_instance):
-        """ convert node tree to appropriate python object.
-            python objects are written to json by simplejson.
-        """
-        if self.nrmessagewritten:
-            self._outstream.write(",")
-        jsonobject = {node_instance.record["BOTSID"]: self._node2json(node_instance)}
-        if self.ta_info["indented"]:
-            indent = 2
-        else:
-            indent = None
-        simplejson.dump(
-            jsonobject,
-            self._outstream,
-            skipkeys=False,
-            ensure_ascii=False,
-            check_circular=False,
-            indent=indent,
-        )
-
-    def _closewrite(self):
-        if self.multiplewrite:
-            self._outstream.write("]")
-        super(json, self)._closewrite()
-
-    def _node2json(self, node_instance):
-        """ recursive method.
-        """
-        # newjsonobject is the json object assembled in the function.
-        newjsonobject = (
-            node_instance.record.copy()
-        )  # init newjsonobject with record fields from node
-        for (
-            childnode
-        ) in (
-            node_instance.children
-        ):  # fill newjsonobject with the lex_records from childnodes.
-            key = childnode.record["BOTSID"]
-            if key in newjsonobject:
-                newjsonobject[key].append(self._node2json(childnode))
-            else:
-                newjsonobject[key] = [self._node2json(childnode)]
-        del newjsonobject["BOTSID"]
-        try:
-            del newjsonobject["BOTSIDnr"]
-        except:
-            pass
-        return newjsonobject
-
-    def _node2jsonold(self, node_instance):
-        """ recursive method.
-        """
-        newdict = node_instance.record.copy()
-        if node_instance.children:  # if this node has records in it.
-            sortedchildren = {}  # empty dict
-            for childnode in node_instance.children:
-                botsid = childnode.record["BOTSID"]
-                if botsid in sortedchildren:
-                    sortedchildren[botsid].append(self._node2json(childnode))
-                else:
-                    sortedchildren[botsid] = [self._node2json(childnode)]
-            for key, value in sortedchildren.items():
-                if len(value) == 1:
-                    newdict[key] = value[0]
-                else:
-                    newdict[key] = value
-        del newdict["BOTSID"]
-        return newdict
-
-    def _canonicalfields(self, node_instance, record_definition):
-        """ subclassed method; sorts using OrderedDict
-            For all fields: check M/C, format.
-            Fields are sorted according to grammar.
-            Fields are never added.
-        """
-        noderecord = node_instance.record
-        new_noderecord = OrderedDict()
-        for field_definition in record_definition[
-            FIELDS
-        ]:  # loop over fields in grammar
-            value = noderecord.get(field_definition[ID])
-            if not value:
-                if field_definition[MANDATORY]:
-                    self.add2errorlist(
-                        _(
-                            '[F02]%(linpos)s: Record "%(mpath)s" field "%(field)s" is mandatory.\n'
-                        )
-                        % {
-                            "linpos": node_instance.linpos(),
-                            "mpath": self.mpathformat(record_definition[MPATH]),
-                            "field": field_definition[ID],
-                        }
-                    )
-                if value is None:  # None-values are not used
-                    continue
-            new_noderecord[field_definition[ID]] = self._formatfield(
-                value, field_definition, record_definition, node_instance
-            )
-        node_instance.record = new_noderecord
-
-
-class jsonnocheck(json):
-    def _node2json(self, node_instance):
-        """ recursive method.
-        """
-        # newjsonobject is the json object assembled in the function.
-        # init newjsonobject with record fields from node; sorted
-        newjsonobject = OrderedDict(sorted(node_instance.record.items()))
-        for (
-            childnode
-        ) in (
-            node_instance.children
-        ):  # fill newjsonobject with the lex_records from childnodes.
-            key = childnode.record["BOTSID"]
-            if key in newjsonobject:
-                newjsonobject[key].append(self._node2json(childnode))
-            else:
-                newjsonobject[key] = [self._node2json(childnode)]
-        del newjsonobject["BOTSID"]
-        del newjsonobject["BOTSIDnr"]
-        return newjsonobject
-
-
-class templatehtml(Outmessage):
-    """ uses Genshi library for templating. Genshi is very similar to Kid, and is the fork/follow-up of Kid.
-        Kid is not being developed further; in time Kid will not be in repositories etc.
-        Templates for Genshi are like Kid templates. Changes:
-        - other namespace: xmlns:py="http://genshi.edgewall.org/" instead of xmlns:py="http://purl.org/kid/ns#"
-        - enveloping is different: <xi:include href="${message}" /> instead of <div py:replace="document(message)"/>
-        2 modes:
-        1. use self.data, a class that can contain any python object (older way of working)
-        2. use structure, recordedefs, write node tree. This is more like normal way of working; output is checked etc.
-            the procided template can handle msot things, change only css of envelope.
-    """
-
-    class TemplateData(object):
-        pass
-
-    def __init__(self, ta_info):
-        try:
-            self.template = botsbaseimport("genshi.template")
-        except ImportError:
-            raise ImportError(
-                _(
-                    'Dependency failure: editype "templatehtml" requires python library "genshi".'
-                )
-            )
-        super(templatehtml, self).__init__(ta_info)
-        self.data = (
-            templatehtml.TemplateData()
-        )  # self.data can be used by mappingscript as container for content
-
-    def _write(self, node_instance):
-        templatefile = abspath(self.__class__.__name__, self.ta_info["template"])
-        try:
-            logger.debug('Start writing to file "%(filename)s".', self.ta_info)
-            loader = self.template.TemplateLoader(auto_reload=False)
-            tmpl = loader.load(templatefile)
-        except:
-            txt = txtexc()
-            raise OutMessageError(
-                _('While templating "%(editype)s.%(messagetype)s", error:\n%(txt)s'),
-                {
-                    "editype": self.ta_info["editype"],
-                    "messagetype": self.ta_info["messagetype"],
-                    "txt": txt,
-                },
-            )
-        try:
-            filehandler = opendata_bin(self.ta_info["filename"], "wb")
-            if self.ta_info["has_structure"]:  # new way of working
-                if self.ta_info["print_as_row"]:
-                    node_instance.collectlines(self.ta_info["print_as_row"])
-                stream = tmpl.generate(node=node_instance)
-            else:
-                stream = tmpl.generate(data=self.data)
-            stream.render(
-                method="xhtml", encoding=self.ta_info["charset"], out=filehandler
-            )
-        except:
-            txt = txtexc()
-            raise OutMessageError(
-                _('While templating "%(editype)s.%(messagetype)s", error:\n%(txt)s'),
-                {
-                    "editype": self.ta_info["editype"],
-                    "messagetype": self.ta_info["messagetype"],
-                    "txt": txt,
-                },
-            )
-        finally:
-            filehandler.close()
-            logger.debug(_('End writing to file "%(filename)s".'), self.ta_info)
-
-    def writeall(self):
-        if not self.root.record:
-            self.root.record = {
-                "BOTSID": "dummy"
-            }  # dummy, is not used but needed for writeall of base class
-        super(templatehtml, self).writeall()
-
-
-class db(Outmessage):
-    """ For database connector: writing to database.
-        Mapping script delevers an object (class, dict) in out.root.
-        Object is pickled and saved.
-        Communication script picks up the pickle,
-    """
-
-    def __init__(self, ta_info):
-        super(db, self).__init__(ta_info)
-        self.root = (
-            None
-        )  # make root None; root is not a Node-object anyway; None can easy be tested when writing.
-
-    def writeall(self):
-        if self.root is None:
-            raise OutMessageError(
-                _("No outgoing message")
-            )  # then there is nothing to write...
-        logger.debug('Start writing to file "%(filename)s".', self.ta_info)
-        writedata_pickled(self.ta_info["filename"], self.root)
-        logger.debug('End writing to file "%(filename)s".', self.ta_info)
-        self.ta_info["envelope"] = "db"
-        self.ta_info["merge"] = False
-
-
-class raw(Outmessage):
-    """ Mapping script delivers a raw bytestream in out.root.
-        Bytestream is saved.
-    """
-
-    def __init__(self, ta_info):
-        super(raw, self).__init__(ta_info)
-        self.root = (
-            None
-        )  # make root None; root is not a Node-object anyway; None can easy be tested when writing.
-
-    def writeall(self):
-        if self.root is None:
-            raise OutMessageError(
-                _("No outgoing message")
-            )  # then there is nothing to write...
-        logger.debug('Start writing to file "%(filename)s".', self.ta_info)
-        self._outstream = opendata_bin(self.ta_info["filename"], "wb")
-        self._outstream.write(self.root)
-        self._outstream.close()
-        logger.debug('End writing to file "%(filename)s".', self.ta_info)
-        self.ta_info["envelope"] = "raw"
-        self.ta_info["merge"] = False
