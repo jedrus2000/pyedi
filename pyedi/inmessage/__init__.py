@@ -16,7 +16,7 @@ from .jsonnocheck import JsonNoCheck
 from .json import Json
 from .xmlnocheck import XmlNoCheck
 from .xml import Xml
-from .tradecoms import Tradacoms
+from .tradacoms import Tradacoms
 from .x12 import X12
 from .csv import Csv
 from .edifact import Edifact
@@ -34,7 +34,7 @@ in_msg_classes = {
     'jsonnocheck': JsonNoCheck,
     'json': Json,
     'raw': Raw,
-    'tradecoms': Tradacoms,
+    'tradacoms': Tradacoms,
     'xmlnocheck': XmlNoCheck,
     'xml': Xml,
     'x12': X12
