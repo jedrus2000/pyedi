@@ -123,13 +123,18 @@ def _translate_one_file(row, routedict, endstatus, userscript, scriptname):
                     True
                 ):  # more than one translation can be done via 'alt'; there is an explicit brreak if no more translation need to be done.
                     # find/lookup the translation************************
-                    tscript, toeditype, tomessagetype = inmessage.lookup_translation(
+                    tscript, toeditype, tomessagetype = \
+                        row['tscript'], \
+                        routedict['toeditype'], \
+                        routedict['tomessagetype']  # TODO tscript value in row is added for mock, routedict however exists but is also used for mock
+                    """ inmessage.lookup_translation(
                         fromeditype=inn_splitup.ta_info["editype"],
                         frommessagetype=inn_splitup.ta_info["messagetype"],
                         frompartner=inn_splitup.ta_info["frompartner"],
                         topartner=inn_splitup.ta_info["topartner"],
                         alt=inn_splitup.ta_info["alt"],
                     )
+                    """
                     if (
                         not tscript
                     ):  # no translation found in translate table; check if can find translation via user script

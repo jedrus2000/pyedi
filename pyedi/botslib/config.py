@@ -49,13 +49,14 @@ class PyEdiConfig:
         self._config[self.DIRECTORIES][self.USERSYSIMPORTPATH] = os.path.normpath(usersys).replace(os.sep, '.')
         self._config[self.DIRECTORIES][self.USERSYSABS] = os.path.abspath(self._config[self.DIRECTORIES][self.USERSYSIMPORTPATH])
 
-    def _get_last_value_in_chain(self, keys: List[str]):
+    def _get_last_key_value_in_chain(self, keys: List[str]):
+        key = None
         v = self._config
         for key in keys:
             v = v[key]
             if not isinstance(v, dict):
                 break
-        return v
+        return key, v
 
     def get(self, keys: List[str]):
         '''
@@ -64,7 +65,15 @@ class PyEdiConfig:
         :param keys:
         :return:
         '''
-        return self._get_last_value_in_chain(keys)
+        _, v = self._get_last_key_value_in_chain(keys)
+        return v
+
+    def set(self, keys: List[str], value):
+        param = self._config
+        *loopkeys, last_key = keys
+        for key in loopkeys:
+            param = param[key]
+        param[last_key] = value
 
     def add(self, keys: List[str], value: str):
         '''
@@ -74,7 +83,7 @@ class PyEdiConfig:
         :param value:
         :return:
         '''
-        v = self._get_last_value_in_chain(keys)
+        _, v = self._get_last_key_value_in_chain(keys)
         if isinstance(v, list):
             v.append(value)
         elif isinstance(v, set):

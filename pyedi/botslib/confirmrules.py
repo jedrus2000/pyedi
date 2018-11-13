@@ -1,3 +1,8 @@
+from .database import (query, changeq)
+from .consts import *
+
+confirmrules = []       #confirmrules are read into memory at start of run
+
 def prepare_confirmrules():
     """ as confirmrules are often used, read these into memory. Reason: performance.
         additional notes:
@@ -6,14 +11,21 @@ def prepare_confirmrules():
         - as confirmrules are used for incoming and outgoing (x12, edifact, email) this will almost always lead to better performance.
     """
     for confirmdict in query(
-        """SELECT confirmtype,ruletype,idroute,idchannel_id as idchannel,frompartner_id as frompartner,topartner_id as topartner,messagetype,negativerule
+        """SELECT confirmtype,
+                  ruletype,
+                  idroute,
+                  idchannel_id as idchannel,
+                  frompartner_id as frompartner,
+                  topartner_id as topartner,
+                  messagetype,
+                  negativerule
                         FROM confirmrule
                         WHERE active=%(active)s
                         ORDER BY negativerule ASC
                         """,
         {"active": True},
     ):
-        botsglobal.confirmrules.append(dict(confirmdict))
+        confirmrules.append(dict(confirmdict))
 
 
 def set_asked_confirmrules(routedict, rootidta):
@@ -64,7 +76,7 @@ def set_asked_confirmrules(routedict, rootidta):
 def globalcheckconfirmrules(confirmtype):
     """ global check if confirmrules with this confirmtype is uberhaupt used.
     """
-    for confirmdict in botsglobal.confirmrules:
+    for confirmdict in confirmrules:
         if confirmdict["confirmtype"] == confirmtype:
             return True
     return False
@@ -74,7 +86,7 @@ def checkconfirmrules(confirmtype, **kwargs):
     confirm = False  # boolean to return: confirm of not?
     # confirmrules are evaluated one by one; first the positive rules, than the negative rules.
     # this make it possible to include first, than exclude. Eg: send for 'all', than exclude certain partners.
-    for confirmdict in botsglobal.confirmrules:
+    for confirmdict in confirmrules:
         if confirmdict["confirmtype"] != confirmtype:
             continue
         if confirmdict["ruletype"] == "all":

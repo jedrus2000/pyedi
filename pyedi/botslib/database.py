@@ -106,7 +106,7 @@ def changeq(querystring, *args):
     cursor.close()
     return terug
     """
-    raise NotImplemented
+    # TODO raise NotImplemented
 
 def insertta(querystring, *args):
     """ insert ta
@@ -180,7 +180,7 @@ def unique(domein, updatewith=None):
         return nummer
 
     """
-    raise NotImplemented
+    return 1  # TODO raise NotImplemented
 
 def checkunique(domein, receivednumber):
     """ to check if received number is sequential: value is compare with new generated number.

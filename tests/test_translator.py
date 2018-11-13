@@ -2,14 +2,19 @@ import sys
 import unittest
 import logging
 
-from pyedi.botslib.logger import logger
 from pyedi.botslib.consts import *
+
+from pyedi.botslib import (
+    logger,
+    config
+)
 
 from pyedi.translator import _translate_one_file
 
 
 class TestTranslator(unittest.TestCase):
     def setUp(self):
+        config.set(['settings','debug'], True)
         logger.addHandler(logging.StreamHandler(sys.stdout))
         logger.setLevel("DEBUG")
 
@@ -26,7 +31,10 @@ class TestTranslator(unittest.TestCase):
                'idta': 158,
                'filesize': 3664,
                'frommail': None,
-               'tomail': None}
+               'tomail': None,
+               # additional fields as temporary DB mock
+               'tscript': '811_4010_2_xml'
+        }
 
 
         routedict = {'frompartner_tochannel_id': None,
@@ -47,7 +55,8 @@ class TestTranslator(unittest.TestCase):
                      'zip_outgoing': None,
                      'alt': u'',
                      'fromeditype': u'x12',
-                     'tomessagetype': u'811_xml'}
+                     'tomessagetype': u'811_xml',
+                     }
 
 
         endstatus = TRANSLATED #  330
