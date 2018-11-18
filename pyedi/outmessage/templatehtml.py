@@ -13,7 +13,7 @@ except ImportError:
 from pyedi.botslib import (
     botsbaseimport,
     abspath,
-    opendata_bin,
+    Writer,
     OutMessageError,
     txtexc,
     logger,
@@ -68,7 +68,7 @@ class TemplateHtml(OutMessage):
                 },
             )
         try:
-            filehandler = opendata_bin(self.ta_info["filename"], "wb")
+            self._outstream.write_mode = Writer.WRITE_BINARY_MODE
             if self.ta_info["has_structure"]:  # new way of working
                 if self.ta_info["print_as_row"]:
                     node_instance.collectlines(self.ta_info["print_as_row"])
@@ -76,7 +76,7 @@ class TemplateHtml(OutMessage):
             else:
                 stream = tmpl.generate(data=self.data)
             stream.render(
-                method="xhtml", encoding=self.ta_info["charset"], out=filehandler
+                method="xhtml", encoding=self.ta_info["charset"], out=self._outstream
             )
         except:
             txt = txtexc()
@@ -89,7 +89,7 @@ class TemplateHtml(OutMessage):
                 },
             )
         finally:
-            filehandler.close()
+            self._outstream.close()
             logger.debug(_('End writing to file "%(filename)s".'), self.ta_info)
 
     def writeall(self):
