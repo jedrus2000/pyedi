@@ -1,3 +1,17 @@
+"""
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    ttp://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
+"""
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
@@ -63,7 +77,7 @@ class TestFormatFieldVariableOutmessage(unittest.TestCase):
         self.assertEqual(
             self.edi._formatfield("-.12", tfield1, testdummy, nodedummy),
             "-0.12",
-            "no zero before dec,sign is OK",
+            "no zero before dec,sign is TransactionStatus_OK",
         )
         self.assertEqual(
             self.edi._formatfield("123", tfield1, testdummy, nodedummy),
@@ -354,7 +368,7 @@ class TestFormatFieldVariableOutmessage(unittest.TestCase):
         self.assertEqual(
             self.edi._formatfield("-.12", tfield1, testdummy, nodedummy),
             "-0.12",
-            "no zero before dec,sign is OK",
+            "no zero before dec,sign is TransactionStatus_OK",
         )
         self.assertEqual(
             self.edi._formatfield("123", tfield1, testdummy, nodedummy),
@@ -617,7 +631,7 @@ class TestFormatFieldVariableOutmessage(unittest.TestCase):
         self.assertEqual(
             self.edi._formatfield("-.12", tfield1, testdummy, nodedummy),
             "-12",
-            "no zero before dec,sign is OK",
+            "no zero before dec,sign is TransactionStatus_OK",
         )  # TODO: puts ) in front
         self.assertEqual(
             self.edi._formatfield("123", tfield1, testdummy, nodedummy),
@@ -2150,7 +2164,7 @@ class TestFormatFieldFixedOutmessage(unittest.TestCase):
         self.assertEqual(
             self.edi._formatfield("-.12", tfield1, testdummy, nodedummy),
             "-0.12",
-            "no zero before dec,sign is OK",
+            "no zero before dec,sign is TransactionStatus_OK",
         )
         self.assertEqual(
             self.edi._formatfield("001", tfield1, testdummy, nodedummy),
@@ -2424,7 +2438,7 @@ class TestFormatFieldFixedOutmessage(unittest.TestCase):
         self.assertEqual(
             self.edi._formatfield("-.12", tfield1, testdummy, nodedummy),
             "-0.12",
-            "no zero before dec,sign is OK",
+            "no zero before dec,sign is TransactionStatus_OK",
         )
         self.assertEqual(
             self.edi._formatfield("001", tfield1, testdummy, nodedummy),
@@ -2698,7 +2712,7 @@ class TestFormatFieldFixedOutmessage(unittest.TestCase):
         self.assertEqual(
             self.edi._formatfield("-.12", tfield1, testdummy, nodedummy),
             "-0.12",
-            "no zero before dec,sign is OK",
+            "no zero before dec,sign is TransactionStatus_OK",
         )
         self.assertEqual(
             self.edi._formatfield("001", tfield1, testdummy, nodedummy),
@@ -2976,7 +2990,7 @@ class TestFormatFieldFixedOutmessage(unittest.TestCase):
         self.assertEqual(
             self.edi._formatfield("-.12", tfield1, testdummy, nodedummy),
             "-0012",
-            "no zero before dec,sign is OK",
+            "no zero before dec,sign is TransactionStatus_OK",
         )  # TODO: puts ) in front
         self.assertEqual(
             self.edi._formatfield("123", tfield1, testdummy, nodedummy),
@@ -3655,7 +3669,7 @@ class TestFormatFieldInmessage(unittest.TestCase):
         self.assertEqual(
             self.edi._formatfield("-.12", tfield1, testdummy, nodedummy),
             "-0.12",
-            "no zero before dec,sign is OK",
+            "no zero before dec,sign is TransactionStatus_OK",
         )
         self.assertEqual(
             self.edi._formatfield("123", tfield1, testdummy, nodedummy),
@@ -3928,7 +3942,7 @@ class TestFormatFieldInmessage(unittest.TestCase):
         self.assertEqual(
             self.edi._formatfield("-.12", tfield1, testdummy, nodedummy),
             "-0.12",
-            "no zero before dec,sign is OK",
+            "no zero before dec,sign is TransactionStatus_OK",
         )
         self.assertEqual(
             self.edi._formatfield("1.23", tfield1, testdummy, nodedummy),
@@ -4136,7 +4150,7 @@ class TestFormatFieldInmessage(unittest.TestCase):
         self.assertEqual(
             self.edi._formatfield("-12", tfield1, testdummy, nodedummy),
             "-0.12",
-            "no zero before dec,sign is OK",
+            "no zero before dec,sign is TransactionStatus_OK",
         )
         self.assertEqual(
             self.edi._formatfield("12345", tfield1, testdummy, nodedummy),

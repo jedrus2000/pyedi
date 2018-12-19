@@ -1,4 +1,17 @@
-# -*- coding: utf-8 -*-
+"""
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    ttp://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
+"""
 
 from __future__ import unicode_literals
 import codecs
@@ -169,7 +182,7 @@ def addinfocore(change, where, wherestring):
         counter += 1
         ta_from = OldTransaction(row[str('idta')])
         ta_from.copyta(**change)  # make new ta from ta_from, using parameters from change
-        ta_from.update(statust=DONE)  # update 'old' ta
+        ta_from.update(statust=TransactionStatus.DONE)  # update 'old' ta
     return counter
 
 
@@ -181,10 +194,10 @@ def addinfo(change, where):
     '''
     if 'rootidta' not in where:
         where['rootidta'] = botsglobal.currentrun.get_minta4query()
-    if 'statust' not in where:  # by default: look only for statust is OK
-        where['statust'] = OK
-    if 'statust' not in change:  # by default: new ta is OK
-        change['statust'] = OK
+    if 'statust' not in where:  # by default: look only for statust is TransactionStatus.OK
+        where['statust'] = TransactionStatus.OK
+    if 'statust' not in change:  # by default: new ta is TransactionStatus.OK
+        change['statust'] = TransactionStatus.OK
     wherestring = ' AND '.join(key + '=%(' + key + ')s ' for key in where if key !=
                                'rootidta')  # wherestring; does not use rootidta
     return addinfocore(change=change, where=where, wherestring=wherestring)
@@ -213,10 +226,10 @@ def updateinfo(change, where):
     '''
     if 'rootidta' not in where:
         where['rootidta'] = botsglobal.currentrun.get_minta4query()
-    if 'statust' not in where:  # by default: look only for statust is OK
-        where['statust'] = OK
-    if 'statust' not in change:  # by default: new ta is OK
-        change['statust'] = OK
+    if 'statust' not in where:  # by default: look only for statust is TransactionStatus.OK
+        where['statust'] = TransactionStatus.OK
+    if 'statust' not in change:  # by default: new ta is TransactionStatus.OK
+        change['statust'] = TransactionStatus.OK
     wherestring = ' AND '.join(key + '=%(' + key + ')s ' for key in where if key !=
                                'rootidta')  # wherestring for copy & done
     return updateinfocore(change=change, where=where, wherestring=wherestring)
@@ -319,7 +332,7 @@ def checkunique(domein, receivednumber):
     if newnumber == receivednumber:
         return True
     else:
-        #received number is not OK. Reset counter in database to previous value.
+        #received number is not TransactionStatus.OK. Reset counter in database to previous value.
         if botsglobal.ini.getboolean('acceptance', 'runacceptancetest', False):
             return False  # TODO: set the unique_runcounter
         else:
@@ -391,9 +404,9 @@ def log_session(func):
         except:
             txt = txtexc()
             botsglobal.logger.debug('Error in process: %(txt)s', {'txt': txt})
-            ta_process.update(statust=ERROR, errortext=txt)
+            ta_process.update(statust=TransactionStatus.ERROR, errortext=txt)
         else:
-            ta_process.update(statust=DONE)
+            ta_process.update(statust=TransactionStatus.DONE)
             return terug
     return wrapper
 
@@ -699,7 +712,7 @@ def set_asked_confirmrules(routedict, rootidta):
                                 AND status=%(status)s
                                 AND statust=%(statust)s
                                 AND (editype='edifact' OR editype='x12') ''',
-                     {'status': FILEOUT, 'statust': OK, 'rootidta': rootidta}):
+                     {'status': FILEOUT, 'statust': TransactionStatus.OK, 'rootidta': rootidta}):
         if row[str('editype')] == 'x12':
             if row[str('messagetype')][:3] in ['997', '999']:
                 continue

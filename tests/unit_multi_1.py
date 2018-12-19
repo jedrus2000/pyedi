@@ -1,3 +1,17 @@
+"""
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    ttp://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
+"""
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
@@ -132,7 +146,7 @@ def test_ccode_with_unicode():
                         % (key, row["rightcode"], value)
                     )
                 else:
-                    print("    OK")
+                    print("    TransactionStatus_OK")
                 break
             else:
                 print("??can not find testentry %s %s in db" % (key, value))
@@ -215,20 +229,20 @@ if __name__ == "__main__":
     )
     ta_externout = utilsunit.getlastta(EXTERNOUT)
     if ta_externout[str("botskey")] != "BOTSKEY01":
-        raise Exception("testreference: botskey not OK")
+        raise Exception("testreference: botskey not TransactionStatus_OK")
     ta_externout = utilsunit.getlastta(PARSED)
     if ta_externout[str("reference")] != "UNBREF01":
-        raise Exception("testreference: unb ref not OK")
+        raise Exception("testreference: unb ref not TransactionStatus_OK")
     ta_externout = utilsunit.getlastta(SPLITUP)
     if ta_externout[str("reference")] != "BOTSKEY01":
-        raise Exception("testreference: botskey not OK")
+        raise Exception("testreference: botskey not TransactionStatus_OK")
     if ta_externout[str("botskey")] != "BOTSKEY01":
-        raise Exception("testreference: botskey not OK")
+        raise Exception("testreference: botskey not TransactionStatus_OK")
     ta_externout = utilsunit.getlastta(TRANSLATED)
     if ta_externout[str("reference")] != "BOTSKEY01":
-        raise Exception("testreference: botskey not OK")
+        raise Exception("testreference: botskey not TransactionStatus_OK")
     if ta_externout[str("botskey")] != "BOTSKEY01":
-        raise Exception("testreference: botskey not OK")
+        raise Exception("testreference: botskey not TransactionStatus_OK")
     # test KECA charset *******************************************************
     utilsunit.RunTestCompareResults(
         [pythoninterpreter, "bots-engine.py", "testkeca"],
@@ -319,8 +333,8 @@ if __name__ == "__main__":
     test_partner_lookup()
     # *************************************************************************
     # testgrammar: tricky grammars and messages (collision tests). these test
-    # should run OK (no grammar-errors, reading & writing OK, extra checks in
-    # mappings scripts have to be OK
+    # should run TransactionStatus_OK (no grammar-errors, reading & writing TransactionStatus_OK, extra checks in
+    # mappings scripts have to be TransactionStatus_OK
     utilsunit.RunTestCompareResults(
         [pythoninterpreter, "bots-engine.py", "testgrammar"],
         {
@@ -525,4 +539,4 @@ if __name__ == "__main__":
     # *************************************************************************
     logging.shutdown()
     botsglobal.db.close
-    print("Tests OK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+    print("Tests TransactionStatus_OK!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")

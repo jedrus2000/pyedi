@@ -1,3 +1,17 @@
+"""
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    ttp://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
+"""
 import sys
 
 try:
@@ -14,7 +28,6 @@ except ImportError:
 from pyedi.botslib.consts import *
 from pyedi.botslib import (
     indent_xml,
-    opendata_bin,
     logger,
 )
 
@@ -23,7 +36,7 @@ from .outmessage import OutMessage
 
 class Xml(OutMessage):
     """ Some problems with right xml prolog, standalone, DOCTYPE, processing instructons: Different ET versions give different results.
-        Things work OK for python 2.7
+        Things work TransactionStatus.OK for python 2.7
         celementtree in 2.7 is version 1.0.6, but different implementation in 2.6??
         For python <2.7: do not generate standalone, DOCTYPE, processing instructions for encoding !=utf-8,ascii OR if elementtree package is installed (version 1.3.0 or bigger)
     """
@@ -154,6 +167,6 @@ class Xml(OutMessage):
         return xmlrecord
 
     def _initwrite(self):
-        logger.debug('Start writing to file "%(filename)s".', self.ta_info)
-        self._outstream = opendata_bin(self.ta_info["filename"], "wb")
+        logger.debug('Start writing to "%(out)s".', {'out': self._outstream})
+        self._outstream = self._edi_storage.opendata_bin(filename=self.ta_info["filename"], mode="wb")
 

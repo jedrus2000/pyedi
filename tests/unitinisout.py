@@ -1,3 +1,17 @@
+"""
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    ttp://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
+"""
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
@@ -27,13 +41,13 @@ if sys.version_info[0] > 2:
 pluging unitinisout.zip
     in bots.ini: max_number_errors = 1
     activate UNITTEST_CORRECTION code
-    runs OK in python2.7 (xml behave slightly differnt in 2.6)
+    runs TransactionStatus_OK in python2.7 (xml behave slightly differnt in 2.6)
     not an acceptance test
 """
 
 
 class TestInmessage_xml(unittest.TestCase):
-    """ Read messages; some should be OK (True), some should give errors (False).
+    """ Read messages; some should be TransactionStatus_OK (True), some should give errors (False).
         Tests per editype.
     """
 
@@ -75,7 +89,7 @@ class TestInmessage_xml(unittest.TestCase):
                 messagetype="xmlnocheck",
                 filename="botssys/infile/unitinmessagexml/xml/110402.xml",
             ),
-            "only a root tag; should be OK",
+            "only a root tag; should be TransactionStatus_OK",
         )
         self.assertRaises(
             botslib.MessageError,
@@ -1335,8 +1349,8 @@ class TestInmessage(unittest.TestCase):
 
     def testedifact0403(self):
         # ~ #test charsets
-        # ~ self.assertRaises(botslib.MessageError,inmessage.parse_edi_file,editype='edifact',messagetype='edifact',filename='botssys/infile/unitinmessageedifact/0403/040301.edi')   #UNOA-regular OK for UNOA as UNOC
-        # ~ self.assertRaises(botslib.MessageError,inmessage.parse_edi_file,editype='edifact',messagetype='edifact',filename='botssys/infile/unitinmessageedifact/0403/040302F-generated.edi')    #UNOA-regular  OK for UNOA as UNOC
+        # ~ self.assertRaises(botslib.MessageError,inmessage.parse_edi_file,editype='edifact',messagetype='edifact',filename='botssys/infile/unitinmessageedifact/0403/040301.edi')   #UNOA-regular TransactionStatus_OK for UNOA as UNOC
+        # ~ self.assertRaises(botslib.MessageError,inmessage.parse_edi_file,editype='edifact',messagetype='edifact',filename='botssys/infile/unitinmessageedifact/0403/040302F-generated.edi')    #UNOA-regular  TransactionStatus_OK for UNOA as UNOC
         in0 = inmessage.parse_edi_file(
             editype="edifact",
             messagetype="edifact",

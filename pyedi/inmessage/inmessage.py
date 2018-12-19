@@ -19,8 +19,6 @@ from pyedi.botslib import (
     unique,
     query,
     botsbaseimport,
-    opendata,
-    readdata,
     abspathdata,
     txtexc,
     get_relevant_text_for_UnicodeError,
@@ -34,11 +32,11 @@ from pyedi.botslib import (
     TranslationNotFoundError,
     botsimport,
     readdata_pickled,
-    readdata_bin,
     OldTransaction,
     config,
     logger,
     logmap,
+    EdiStorage,
     runscript,
 )
 import pyedi.node as node
@@ -55,6 +53,7 @@ class InMessage(message.Message):
     def __init__(self, ta_info):
         super(InMessage, self).__init__(ta_info)
         self.lex_records = []  # init list of lex_records
+
 
     def initfromfile(self):
         """ Initialisation from a edi file.
@@ -512,12 +511,19 @@ class InMessage(message.Message):
     def _readcontent_edifile(self):
         """ read content of edi file to memory.
         """
-        logger.debug('Read edi file "%(filename)s".', self.ta_info)
+        logger.debug('Read edi from: "%(in)s".', {'in': self.ta_info["filename"]})
+        # TODO - to delete
+        """
         self.rawinput = readdata(
             filename=self.ta_info["filename"],
             charset=self.ta_info["charset"],
             errors=self.ta_info["checkcharsetin"],
         )
+        """
+        self.rawinput = self._edi_storage.readdata(
+            filename=self.ta_info["filename"],
+            charset=self.ta_info["charset"],
+            check_charset_mode=self.ta_info["checkcharsetin"])
 
     def _sniff(self):
         """ sniffing: hard coded parsing of edi file.

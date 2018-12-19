@@ -1,3 +1,17 @@
+"""
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    ttp://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
+"""
 from gettext import gettext as _
 
 from pyedi.botslib.consts import *
@@ -81,7 +95,7 @@ class Grammar(object):
             # read recorddefs.
             # recorddefs are checked and changed, so need to indicate if recordsdef has already been checked and changed.
             # done by setting entry 'BOTS_1$@#%_error' in recorddefs; if this entry is
-            # True: read, errors; False: read OK.
+            # True: read, errors; False: read TransactionStatus.OK.
             try:
                 self._dorecorddefs()
             except GrammarPartMissing:  # basic checks on recordsdef - it is not there, or not a dict, etc.
@@ -94,11 +108,11 @@ class Grammar(object):
             else:
                 self.recorddefs[
                     ERROR_IN_GRAMMAR
-                ] = False  # mark recorddefs as 'read and checked OK'
+                ] = False  # mark recorddefs as 'read and checked TransactionStatus.OK'
             # read structure
             # structure is checked and changed, so need to indicate if structure has already been checked and changed.
             # done by setting entry 'BOTS_1$@#%_error' in structure[0]; if this entry
-            # is True: read, errors; False: read OK.
+            # is True: read, errors; False: read TransactionStatus.OK.
             try:
                 self._dostructure()
             except GrammarPartMissing:  # basic checks on strucure - it is not there, or not a list, etc.
@@ -111,7 +125,7 @@ class Grammar(object):
             else:
                 self.structure[0][
                     ERROR_IN_GRAMMAR
-                ] = False  # mark structure as 'read and checked OK'
+                ] = False  # mark structure as 'read and checked TransactionStatus.OK'
             # link recordsdefs to structure
             # as structure can be re-used/imported from other grammars, do this always when reading grammar.
             self._linkrecorddefs2structure(self.structure)
@@ -148,7 +162,7 @@ class Grammar(object):
                     ),
                     {"grammar": self.grammarname},
                 )
-            return  # already did checks - result OK! skip checks
+            return  # already did checks - result TransactionStatus.OK! skip checks
         # not checked (in this run): so check the recorddefs
         for recordid, fields in self.recorddefs.items():
             if not isinstance(recordid, str):
@@ -524,7 +538,7 @@ class Grammar(object):
                     ),
                     {"grammar": self.grammarname},
                 )
-            return  # already did checks - result OK! skip checks
+            return  # already did checks - result TransactionStatus.OK! skip checks
         # not checked (in this run): so check the structure
         self._checkstructure(self.structure, [])
         if self.syntax["checkcollision"]:

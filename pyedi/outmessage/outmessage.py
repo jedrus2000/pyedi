@@ -1,4 +1,17 @@
-# -*- coding: utf-8 -*-
+"""
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    ttp://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
+"""
 import time
 import decimal
 
@@ -19,10 +32,11 @@ except ImportError:
 from pyedi.botslib.consts import *
 from pyedi.botslib import (
     OutMessageError,
-    opendata,
     get_relevant_text_for_UnicodeError,
     BotsImportError,
     logger,
+    EdiStorage,
+    EdiFile,
 )
 import pyedi.node as node
 import pyedi.message as message
@@ -49,6 +63,7 @@ class OutMessage(message.Message):
         super(OutMessage, self).__init__(ta_info)
         # message tree; build via put()-interface in mappingscript. Initialise with empty dict
         self.root = node.Node(record={})
+        self._outstream: EdiFile = None
 
     def messagegrammarread(self, typeofgrammarfile):
         """ read grammar for a message/envelope.
@@ -112,16 +127,24 @@ class OutMessage(message.Message):
             self._closewrite()
 
     def _initwrite(self):
-        logger.debug('Start writing to file "%(filename)s".', self.ta_info)
+        logger.debug('Start writing to: "%(out)s".', {'out': self._outstream})
+        # TODO - to delete
+        """
         self._outstream = opendata(
             self.ta_info["filename"],
             "wb",
             charset=self.ta_info["charset"],
             errors=self.ta_info["checkcharsetout"],
         )
+        """
+        self._outstream = self._edi_storage.opendata(
+            filename=self.ta_info["filename"],
+            mode="wb",
+            charset=self.ta_info["charset"],
+            check_charset_mode=self.ta_info["checkcharsetout"])
 
     def _closewrite(self):
-        logger.debug('End writing to file "%(filename)s".', self.ta_info)
+        logger.debug('End writing to: "%(out)s".', {'out': self._outstream})
         self._outstream.close()
 
     def _write(self, node_instance):

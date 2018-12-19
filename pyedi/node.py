@@ -1,3 +1,17 @@
+"""
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    ttp://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
+"""
 import decimal
 from gettext import gettext as _
 
@@ -356,7 +370,7 @@ class Node(object):
                     key not in self.record or value != self.record[key]
                 ):  # does not match/is not right node
                     return None
-            else:  # all items in mpath are matched and OK; recursuve search
+            else:  # all items in mpath are matched and TransactionStatus.OK; recursuve search
                 for childnode in self.children:
                     terug = childnode._getcore(
                         mpaths[1:]
@@ -378,7 +392,7 @@ class Node(object):
                     terug = self.record[key][:]  # copy to avoid memory problems
                 elif value != self.record[key]:  # compare values
                     return None  # does not match/is not right node
-            else:  # all keys/values in this mpathr are matched and OK.
+            else:  # all keys/values in this mpathr are matched and TransactionStatus.OK.
                 return (
                     terug
                 )  # either the remembered value is returned or 1 (as a boolean, indicated 'found)
@@ -430,7 +444,7 @@ class Node(object):
         for key, value in mpaths[0].items():
             if key not in self.record or value != self.record[key]:
                 return
-        else:  # all items are checked and OK.
+        else:  # all items are checked and TransactionStatus.OK.
             if len(mpaths) == 1:
                 yield self  # found!
             else:
@@ -464,7 +478,7 @@ class Node(object):
         for key, value in mpaths[0].items():
             if key not in self.record or value != self.record[key]:
                 return
-        else:  # all items are checked and OK.
+        else:  # all items are checked and TransactionStatus.OK.
             if len(mpaths) == 1:
                 yield [self]  # found!
             else:
@@ -811,7 +825,7 @@ class Node(object):
     def stripnode(self):
         """ removes spaces from all fields in tree.
             used in alt translations where a dict is returned by mappingscript indicating the out-tree should be used as inn.
-            the out-tree has been formatted already, this is not OK for fixed formats (idoc!)
+            the out-tree has been formatted already, this is not TransactionStatus.OK for fixed formats (idoc!)
         """
         if self.record is not None:
             for key, value in self.record.items():

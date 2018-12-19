@@ -1,3 +1,17 @@
+"""
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    ttp://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
+"""
 try:
     from xml.etree import cElementTree as ET
 except ImportError:
@@ -98,7 +112,7 @@ class Var(InMessage):
                             allow_spaces_between_records
                     ):  # by default True; False for strict handling of x12/edifact
                         # exception for tab-delimited csv files. If first field is not filled:
-                        # first TAB is ignored, which is not OK. Patch this:
+                        # first TAB is ignored, which is not TransactionStatus.OK. Patch this:
                         if char in field_sep and self.__class__.__name__ == 'Csv': #  isinstance(self, Csv):
                             pass  # do not ignore TAB -> go on lexing
                         else:

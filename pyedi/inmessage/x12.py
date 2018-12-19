@@ -1,3 +1,17 @@
+"""
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    ttp://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
+"""
 
 try:
     from xml.etree import cElementTree as ET
@@ -203,7 +217,7 @@ class X12(Var):
                             )
                             % {"count": secount}
                         )
-            logmap.debug("Parsing X12 envelopes is OK")
+            logmap.debug("Parsing X12 envelopes is TransactionStatus.OK")
 
     def try_to_retrieve_info(self):
         """ when edi-file is not correct, (try to) get info about eg partnerID's in message
@@ -294,7 +308,7 @@ class X12(Var):
                 messagetype=tomessagetype,
                 filename=filename,
                 reference=reference,
-                statust=OK,
+                statust=TransactionStatus.OK,
             )  # make outmessage object
             out.ta_info["frompartner"] = receiver  # reverse!
             out.ta_info["topartner"] = sender  # reverse!

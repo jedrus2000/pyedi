@@ -1,3 +1,17 @@
+"""
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    ttp://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
+"""
 # **********************************************************/**
 # ***************** class  Transaction *********************/**
 # **********************************************************/**
@@ -31,9 +45,9 @@ def log_session(func):
         except:
             txt = txtexc()
             logger.debug("Error in process: %(txt)s", {"txt": txt})
-            ta_process.update(statust=ERROR, errortext=txt)
+            ta_process.update(statust=TransactionStatus.ERROR, errortext=txt)
         else:
-            ta_process.update(statust=DONE)
+            ta_process.update(statust=TransactionStatus.DONE)
             return terug
 
     return wrapper
@@ -201,7 +215,7 @@ class NewProcess(NewTransaction):
 
     def __init__(self, functionname=""):
         super(NewProcess, self).__init__(
-            filename=functionname, status=PROCESS, idroute=getrouteid()
+            filename=functionname, status=TranslationStatus.PROCESS, idroute=getrouteid()
         )
         self.processlist.append(self.idta)
 

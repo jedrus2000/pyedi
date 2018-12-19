@@ -1,4 +1,20 @@
+"""
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    ttp://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
+"""
 from random import randrange
+
+from .logger import logger
 
 # **********************************************************/**
 # *************************Database***********************/**
@@ -14,7 +30,7 @@ def addinfocore(change, where, wherestring):
         ta_from.copyta(
             **change
         )  # make new ta from ta_from, using parameters from change
-        ta_from.update(statust=DONE)  # update 'old' ta
+        ta_from.update(statust=TransactionStatus.DONE)  # update 'old' ta
     return counter
     """
     raise NotImplemented
@@ -28,10 +44,10 @@ def addinfo(change, where):
 
     if "rootidta" not in where:
         where["rootidta"] = botsglobal.currentrun.get_minta4query()
-    if "statust" not in where:  # by default: look only for statust is OK
-        where["statust"] = OK
-    if "statust" not in change:  # by default: new ta is OK
-        change["statust"] = OK
+    if "statust" not in where:  # by default: look only for statust is TransactionStatus.OK
+        where["statust"] = TransactionStatus.OK
+    if "statust" not in change:  # by default: new ta is TransactionStatus.OK
+        change["statust"] = TransactionStatus.OK
     wherestring = " AND ".join(
         key + "=%(" + key + ")s " for key in where if key != "rootidta"
     )  # wherestring; does not use rootidta
@@ -64,10 +80,10 @@ def updateinfo(change, where):
 
     if "rootidta" not in where:
         where["rootidta"] = botsglobal.currentrun.get_minta4query()
-    if "statust" not in where:  # by default: look only for statust is OK
-        where["statust"] = OK
-    if "statust" not in change:  # by default: new ta is OK
-        change["statust"] = OK
+    if "statust" not in where:  # by default: look only for statust is TransactionStatus.OK
+        where["statust"] = TransactionStatus.OK
+    if "statust" not in change:  # by default: new ta is TransactionStatus.OK
+        change["statust"] = TransactionStatus.OK
     wherestring = " AND ".join(
         key + "=%(" + key + ")s " for key in where if key != "rootidta"
     )  # wherestring for copy & done
@@ -107,6 +123,7 @@ def changeq(querystring, *args):
     return terug
     """
     # TODO raise NotImplemented
+    logger.info(f'changeq: querystring={querystring}, args={args}')
 
 def insertta(querystring, *args):
     """ insert ta
@@ -123,7 +140,9 @@ def insertta(querystring, *args):
     return newidta
     """
     # TODO NotImplemented
-    return randrange(300)
+    random_newidta = randrange(300)
+    logger.info(f'insertta: querystring={querystring}, args={args}, random_ret_value={random_newidta}')
+    return random_newidta
 
 def unique_runcounter(domain, updatewith=None):
     """ as unique, but per run of bots-engine.
@@ -180,7 +199,10 @@ def unique(domein, updatewith=None):
         return nummer
 
     """
-    return 1  # TODO raise NotImplemented
+    # TODO raise NotImplemented
+    nummer = 1
+    logger.info(f'unique: domein={domein}, updatewith={updatewith}, nummer={nummer}')
+    return nummer
 
 def checkunique(domein, receivednumber):
     """ to check if received number is sequential: value is compare with new generated number.
@@ -190,7 +212,7 @@ def checkunique(domein, receivednumber):
     if newnumber == receivednumber:
         return True
     else:
-        # received number is not OK. Reset counter in database to previous value.
+        # received number is not TransactionStatus.OK. Reset counter in database to previous value.
         if botsglobal.ini.getboolean("acceptance", "runacceptancetest", False):
             return False  # TODO: set the unique_runcounter
         else:

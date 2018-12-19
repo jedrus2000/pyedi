@@ -1,3 +1,17 @@
+"""
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    ttp://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
+"""
 # **********************************************************/**
 # *************************File handling os.path etc***********************/**
 # **********************************************************/**
@@ -53,7 +67,7 @@ def deldata(filename):
         pass
 
 
-def opendata(filename, mode, charset, errors="strict"):
+def _opendata(filename, mode, charset, errors="strict"):
     """ open internal data file as unicode."""
     filename = abspathdata(filename)
     if "w" in mode:
@@ -61,15 +75,15 @@ def opendata(filename, mode, charset, errors="strict"):
     return codecs.open(filename, mode, charset, errors)
 
 
-def readdata(filename, charset, errors="strict"):
+def _readdata(filename, charset, errors="strict"):
     """ read internal data file in memory as unicode."""
-    filehandler = opendata(filename, "r", charset, errors)
+    filehandler = _opendata(filename, "r", charset, errors)
     content = filehandler.read()
     filehandler.close()
     return content
 
 
-def opendata_bin(filename, mode):
+def _opendata_bin(filename, mode):
     """ open internal data file as binary."""
     filename = abspathdata(filename)
     if "w" in mode:
@@ -77,22 +91,22 @@ def opendata_bin(filename, mode):
     return open(filename, mode)
 
 
-def readdata_bin(filename):
+def _readdata_bin(filename):
     """ read internal data file in memory as binary."""
-    filehandler = opendata_bin(filename, mode="rb")
+    filehandler = _opendata_bin(filename, mode="rb")
     content = filehandler.read()
     filehandler.close()
     return content
 
 
 def readdata_pickled(filename):
-    filehandler = opendata_bin(filename, mode="rb")  # pickle is a binary/byte stream
+    filehandler = _opendata_bin(filename, mode="rb")  # pickle is a binary/byte stream
     content = pickle.load(filehandler)
     filehandler.close()
     return content
 
 
 def writedata_pickled(filename, content):
-    filehandler = opendata_bin(filename, mode="wb")  # pickle is a binary/byte stream
+    filehandler = _opendata_bin(filename, mode="wb")  # pickle is a binary/byte stream
     pickle.dump(content, filehandler)
     filehandler.close()

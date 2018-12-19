@@ -1,5 +1,16 @@
 """
-pedilib
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    ttp://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
 """
 
 from .config import config
@@ -26,12 +37,8 @@ from .importtools import botsimport, botsbaseimport
 from .logger import logger, logmap
 from .misc import updateunlessset, indent_xml
 from .filetools import (
-    readdata,
-    readdata_bin,
     readdata_pickled,
     abspathdata,
-    opendata,
-    opendata_bin,
     writedata_pickled,
     abspath,
 )
@@ -46,6 +53,12 @@ from .database import (
     query,
     changeq,
     insertta,
+)
+
+from .storage import (
+    EdiStorage,
+    EdiFile,
+    FileSystemStorage,
 )
 
 from .globals import (

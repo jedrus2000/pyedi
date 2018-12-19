@@ -1,3 +1,17 @@
+"""
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    ttp://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
+"""
 try:
     from xml.etree import cElementTree as ET
 except ImportError:
@@ -49,7 +63,7 @@ class Xml(InMessage):
                 for key, value in extra_character_entity.items():
                     parser.entity[key] = value
             except AttributeError:
-                pass  # there is no extra_character_entity in the mailbag definitions, is OK.
+                pass  # there is no extra_character_entity in the mailbag definitions, is TransactionStatus.OK.
             etree = (
                 ET.ElementTree()
             )  # ElementTree: lexes, parses, makes etree; etree is quite similar to bots-node trees but conversion is needed

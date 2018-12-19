@@ -1,3 +1,17 @@
+"""
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    ttp://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
+"""
 # -*- coding: utf-8 -*-
 
 from __future__ import print_function
@@ -21,7 +35,7 @@ if sys.version_info[0] > 2:
 # before running: delete all transactions.!!!
 """ input: mime (complex structure); 2 different edi attachments, and ' tekst' attachemnt
     some user scripts are written in this unit test; so one runs errors will occur; write user script which prevents error in next run
-    runs OK if no errors in unit tests; that is : no exceptions are raised. The bots-engine runs do give errors, but this is needed for retries
+    runs TransactionStatus_OK if no errors in unit tests; that is : no exceptions are raised. The bots-engine runs do give errors, but this is needed for retries
 """
 
 
@@ -90,7 +104,7 @@ if __name__ == "__main__":
     botsinit.connect()
 
     #############route unitretry_automatic###################
-    # channel has type file: this goes OK
+    # channel has type file: this goes TransactionStatus_OK
     change_communication_type("unitretry_automatic_out", "file")
     subprocess.call(
         [
@@ -116,7 +130,7 @@ if __name__ == "__main__":
     )  # check report
     row = utilsunit.getreportlastrun()
     if row[str("filesize")] != 1482:
-        raise Exception("1 filesize not OK: %s" % row["filesize"])
+        raise Exception("1 filesize not TransactionStatus_OK: %s" % row["filesize"])
     # change channel type to ftp: errors (run twice)
     change_communication_type("unitretry_automatic_out", "ftp")
     subprocess.call(
@@ -163,7 +177,7 @@ if __name__ == "__main__":
         },
         utilsunit.getreportlastrun(),
     )  # check report
-    # change channel type to file and do automaticretrycommunication: OK
+    # change channel type to file and do automaticretrycommunication: TransactionStatus_OK
     change_communication_type("unitretry_automatic_out", "file")
     subprocess.call(
         [pythoninterpreter, "bots-engine.py", "--automaticretrycommunication"]
@@ -200,7 +214,7 @@ if __name__ == "__main__":
         },
         utilsunit.getreportlastrun(),
     )  # check report
-    # channel has type file: this goes OK
+    # channel has type file: this goes TransactionStatus_OK
     change_communication_type("unitretry_automatic_out", "file")
     subprocess.call(
         [
@@ -226,7 +240,7 @@ if __name__ == "__main__":
     )  # check report
     row = utilsunit.getreportlastrun()
     if row[str("filesize")] != 1482:
-        raise Exception("2 filesize not OK: %s" % row["filesize"])
+        raise Exception("2 filesize not TransactionStatus_OK: %s" % row["filesize"])
     # rereceive last 2 files
     indicate_rereceive()
     subprocess.call([pythoninterpreter, "bots-engine.py", "--rereceive"])  # run bots
@@ -246,7 +260,7 @@ if __name__ == "__main__":
     )  # check report
     row = utilsunit.getreportlastrun()
     if row[str("filesize")] != 1482:
-        raise Exception("3 filesize not OK: %s" % row["filesize"])
+        raise Exception("3 filesize not TransactionStatus_OK: %s" % row["filesize"])
     # resend last 2 files
     indicate_send()
     subprocess.call([pythoninterpreter, "bots-engine.py", "--resend"])  # run bots
@@ -265,7 +279,7 @@ if __name__ == "__main__":
         utilsunit.getreportlastrun(),
     )  # check report
 
-    # ***run with communciation errors, run OK, communciation errors, run OK, run automaticretry
+    # ***run with communciation errors, run TransactionStatus_OK, communciation errors, run TransactionStatus_OK, run automaticretry
     # change channel type to ftp: errors
     change_communication_type("unitretry_automatic_out", "ftp")
     subprocess.call(
@@ -290,7 +304,7 @@ if __name__ == "__main__":
         },
         utilsunit.getreportlastrun(),
     )  # check report
-    # channel has type file: this goes OK
+    # channel has type file: this goes TransactionStatus_OK
     change_communication_type("unitretry_automatic_out", "file")
     subprocess.call(
         [
@@ -316,7 +330,7 @@ if __name__ == "__main__":
     )  # check report
     row = utilsunit.getreportlastrun()
     if row[str("filesize")] != 1482:
-        raise Exception("4 filesize not OK: %s" % row["filesize"])
+        raise Exception("4 filesize not TransactionStatus_OK: %s" % row["filesize"])
     # change channel type to ftp: errors
     change_communication_type("unitretry_automatic_out", "ftp")
     subprocess.call(
@@ -341,7 +355,7 @@ if __name__ == "__main__":
         },
         utilsunit.getreportlastrun(),
     )  # check report
-    # channel has type file: this goes OK
+    # channel has type file: this goes TransactionStatus_OK
     change_communication_type("unitretry_automatic_out", "file")
     subprocess.call(
         [
@@ -367,8 +381,8 @@ if __name__ == "__main__":
     )  # check report
     row = utilsunit.getreportlastrun()
     if row[str("filesize")] != 1482:
-        raise Exception("5 filesize not OK: %s" % row["filesize"])
-    # change channel type to file and do automaticretrycommunication: OK
+        raise Exception("5 filesize not TransactionStatus_OK: %s" % row["filesize"])
+    # change channel type to file and do automaticretrycommunication: TransactionStatus_OK
     change_communication_type("unitretry_automatic_out", "file")
     subprocess.call(
         [pythoninterpreter, "bots-engine.py", "--automaticretrycommunication"]
@@ -411,7 +425,7 @@ if __name__ == "__main__":
         },
         utilsunit.getreportlastrun(),
     )  # check report
-    # channel has type file: this goes OK
+    # channel has type file: this goes TransactionStatus_OK
     change_communication_type("unitretry_automatic_out", "file")
     subprocess.call(
         [
@@ -437,8 +451,8 @@ if __name__ == "__main__":
     )  # check report
     row = utilsunit.getreportlastrun()
     if row[str("filesize")] != 1482:
-        raise Exception("6 filesize not OK: %s" % row["filesize"])
-    # change channel type to file and do automaticretrycommunication: OK
+        raise Exception("6 filesize not TransactionStatus_OK: %s" % row["filesize"])
+    # change channel type to file and do automaticretrycommunication: TransactionStatus_OK
     change_communication_type("unitretry_automatic_out", "file")
     subprocess.call(
         [pythoninterpreter, "bots-engine.py", "--automaticretrycommunication"]
@@ -477,7 +491,7 @@ if __name__ == "__main__":
     )  # check report
     row = utilsunit.getreportlastrun()
     if row[str("filesize")] != 741:
-        raise Exception("7 filesize not OK: %s" % row["filesize"])
+        raise Exception("7 filesize not TransactionStatus_OK: %s" % row["filesize"])
     # change channel type to ftp: errors (run twice)
     change_communication_type("unitretry_mime_out", "ftp")
     subprocess.call([pythoninterpreter, "bots-engine.py", "unitretry_mime"])  # run bots
@@ -513,8 +527,8 @@ if __name__ == "__main__":
     )  # check report
     row = utilsunit.getreportlastrun()
     if row[str("filesize")] != 741:
-        raise Exception("8 filesize not OK: %s" % row["filesize"])
-    # change channel type to mimefile and do automaticretrycommunication: OK
+        raise Exception("8 filesize not TransactionStatus_OK: %s" % row["filesize"])
+    # change channel type to mimefile and do automaticretrycommunication: TransactionStatus_OK
     change_communication_type("unitretry_mime_out", "mimefile")
     subprocess.call(
         [pythoninterpreter, "bots-engine.py", "--automaticretrycommunication"]
@@ -552,7 +566,7 @@ if __name__ == "__main__":
         },
         utilsunit.getreportlastrun(),
     )  # check report
-    # channel has type file: this goes OK
+    # channel has type file: this goes TransactionStatus_OK
     change_communication_type("unitretry_mime_out", "mimefile")
     subprocess.call([pythoninterpreter, "bots-engine.py", "unitretry_mime"])  # run bots
     botsglobal.db.commit()
@@ -571,9 +585,9 @@ if __name__ == "__main__":
     )  # check report
     row = utilsunit.getreportlastrun()
     if row[str("filesize")] != 741:
-        raise Exception("9 filesize not OK: %s" % row["filesize"])
+        raise Exception("9 filesize not TransactionStatus_OK: %s" % row["filesize"])
 
-    # ***run with communciation errors, run OK, communciation errors, run OK, run automaticretry
+    # ***run with communciation errors, run TransactionStatus_OK, communciation errors, run TransactionStatus_OK, run automaticretry
     # change channel type to ftp: errors
     change_communication_type("unitretry_mime_out", "ftp")
     subprocess.call([pythoninterpreter, "bots-engine.py", "unitretry_mime"])  # run bots
@@ -591,7 +605,7 @@ if __name__ == "__main__":
         },
         utilsunit.getreportlastrun(),
     )  # check report
-    # channel has type file: this goes OK
+    # channel has type file: this goes TransactionStatus_OK
     change_communication_type("unitretry_mime_out", "mimefile")
     subprocess.call([pythoninterpreter, "bots-engine.py", "unitretry_mime"])  # run bots
     botsglobal.db.commit()
@@ -610,7 +624,7 @@ if __name__ == "__main__":
     )  # check report
     row = utilsunit.getreportlastrun()
     if row[str("filesize")] != 741:
-        raise Exception("10 filesize not OK: %s" % row["filesize"])
+        raise Exception("10 filesize not TransactionStatus_OK: %s" % row["filesize"])
     # change channel type to ftp: errors
     change_communication_type("unitretry_mime_out", "ftp")
     subprocess.call([pythoninterpreter, "bots-engine.py", "unitretry_mime"])  # run bots
@@ -628,7 +642,7 @@ if __name__ == "__main__":
         },
         utilsunit.getreportlastrun(),
     )  # check report
-    # channel has type file: this goes OK
+    # channel has type file: this goes TransactionStatus_OK
     change_communication_type("unitretry_mime_out", "mimefile")
     subprocess.call([pythoninterpreter, "bots-engine.py", "unitretry_mime"])  # run bots
     botsglobal.db.commit()
@@ -647,8 +661,8 @@ if __name__ == "__main__":
     )  # check report
     row = utilsunit.getreportlastrun()
     if row[str("filesize")] != 741:
-        raise Exception("11 filesize not OK: %s" % row["filesize"])
-    # change channel type to file and do automaticretrycommunication: OK
+        raise Exception("11 filesize not TransactionStatus_OK: %s" % row["filesize"])
+    # change channel type to file and do automaticretrycommunication: TransactionStatus_OK
     change_communication_type("unitretry_mime_out", "mimefile")
     subprocess.call(
         [pythoninterpreter, "bots-engine.py", "--automaticretrycommunication"]
@@ -684,7 +698,7 @@ if __name__ == "__main__":
         },
         utilsunit.getreportlastrun(),
     )  # check report
-    # channel has type file: this goes OK
+    # channel has type file: this goes TransactionStatus_OK
     change_communication_type("unitretry_mime_out", "mimefile")
     subprocess.call([pythoninterpreter, "bots-engine.py", "unitretry_mime"])  # run bots
     botsglobal.db.commit()
@@ -703,8 +717,8 @@ if __name__ == "__main__":
     )  # check report
     row = utilsunit.getreportlastrun()
     if row[str("filesize")] != 741:
-        raise Exception("12 filesize not OK: %s" % row["filesize"])
-    # change channel type to file and do automaticretrycommunication: OK
+        raise Exception("12 filesize not TransactionStatus_OK: %s" % row["filesize"])
+    # change channel type to file and do automaticretrycommunication: TransactionStatus_OK
     change_communication_type("unitretry_mime_out", "mimefile")
     subprocess.call(
         [pythoninterpreter, "bots-engine.py", "--automaticretrycommunication"]
@@ -726,4 +740,4 @@ if __name__ == "__main__":
 
     logging.shutdown()
     botsglobal.db.close
-    print("Tests OK!!!")
+    print("Tests TransactionStatus_OK!!!")

@@ -1,3 +1,18 @@
+"""
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    http://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
+"""
+
 import os
 import copy
 from gettext import gettext as _
@@ -41,7 +56,7 @@ def translate(startstatus, endstatus, routedict, rootidta):
                                 AND idroute=%(idroute)s """,
         {
             "status": startstatus,
-            "statust": OK,
+            "statust": TransactionStatus.OK,
             "idroute": routedict["idroute"],
             "rootidta": rootidta,
         },
@@ -85,6 +100,7 @@ def _translate_one_file(row, routedict, endstatus, userscript, scriptname):
             frompartner=row["frompartner"],
             topartner=row["topartner"],
             filename=row["filename"],
+            edi_storage=row["edi_storage"],
             messagetype=row["messagetype"],
             testindicator=row["testindicator"],
             editype=row["editype"],
@@ -96,10 +112,10 @@ def _translate_one_file(row, routedict, endstatus, userscript, scriptname):
             idroute=routedict["idroute"],
             command=routedict["command"],
         )
-        edifile.checkforerrorlist()  # no exception if infile has been lexed and parsed OK else raises an error
+        edifile.checkforerrorlist()  # no exception if infile has been lexed and parsed TransactionStatus.OK else raises an error
 
         # parse & passthrough; file is parsed, partners are known, no mapping, does confirm.
-        if int(routedict["translateind"]) == 3:
+        if int(routedict["translateind"]) == TranslationStatus.DISCARD:
             # partners should be queried from ISA level!
             raise GotoException("dummy")
         # edifile.ta_info contains info: QUERIES, charset etc
@@ -166,8 +182,9 @@ def _translate_one_file(row, routedict, endstatus, userscript, scriptname):
                         editype=toeditype,
                         messagetype=tomessagetype,
                         filename=filename_translated,
+                        edi_storage=row["edi_storage"],
                         reference=unique("messagecounter"),
-                        statust=OK,
+                        statust=TransactionStatus.OK,
                         divtext=tscript,
                     )  # make outmessage object
 
@@ -289,26 +306,26 @@ def _translate_one_file(row, routedict, endstatus, userscript, scriptname):
                     raise
                 txt = txtexc()
                 # update db. inn_splitup.ta_info could be changed by mappingscript. Is this useful?
-                ta_splitup.update(statust=ERROR, errortext=txt, **inn_splitup.ta_info)
+                ta_splitup.update(statust=TransactionStatus.ERROR, errortext=txt, **inn_splitup.ta_info)
                 ta_splitup.deletechildren()
             else:
                 # update db. inn_splitup.ta_info could be changed by mappingscript. Is this useful?
-                ta_splitup.update(statust=DONE, **inn_splitup.ta_info)
+                ta_splitup.update(statust=TransactionStatus.DONE, **inn_splitup.ta_info)
 
     # exceptions file_in-level
-    except GotoException:  # edi-file is OK, file is passed-through after parsing.
+    except GotoException:  # edi-file is TransactionStatus.OK, file is passed-through after parsing.
         ta_parsed.update(
-            statust=DONE, filesize=row["filesize"], **edifile.ta_info
+            statust=TransactionStatus.DONE, filesize=row["filesize"], **edifile.ta_info
         )  # update with info from eg queries
         ta_parsed.copyta(
-            status=MERGED, statust=OK
+            status=MERGED, statust=TransactionStatus.OK
         )  # original file goes straight to MERGED
         edifile.handleconfirm(ta_fromfile, routedict, error=False)
         logger.debug(
             _('Parse & passthrough for input file "%(filename)s".'), row
         )
     except FileTooLargeError as msg:
-        ta_parsed.update(statust=ERROR, errortext=str(msg))
+        ta_parsed.update(statust=TransactionStatus.ERROR, errortext=str(msg))
         ta_parsed.deletechildren()
         logger.debug(
             'Error in translating input file "%(filename)s":\n%(msg)s',
@@ -316,7 +333,7 @@ def _translate_one_file(row, routedict, endstatus, userscript, scriptname):
         )
     except:
         txt = txtexc()
-        ta_parsed.update(statust=ERROR, errortext=txt, **edifile.ta_info)
+        ta_parsed.update(statust=TransactionStatus.ERROR, errortext=txt, **edifile.ta_info)
         ta_parsed.deletechildren()
         edifile.handleconfirm(ta_fromfile, routedict, error=True)
         logger.debug(
@@ -325,21 +342,21 @@ def _translate_one_file(row, routedict, endstatus, userscript, scriptname):
         )
     else:
         edifile.handleconfirm(ta_fromfile, routedict, error=False)
-        ta_parsed.update(statust=DONE, filesize=row["filesize"], **edifile.ta_info)
+        ta_parsed.update(statust=TransactionStatus.DONE, filesize=row["filesize"], **edifile.ta_info)
         logger.debug(_('Translated input file "%(filename)s".'), row)
     finally:
-        ta_fromfile.update(statust=DONE)
+        ta_fromfile.update(statust=TransactionStatus.DONE)
 
 
 def handle_out_message(out_translated, ta_translated):
     if (
-        out_translated.ta_info["statust"] == DONE
+        out_translated.ta_info["statust"] == TransactionStatus.DONE
     ):  # if indicated in mappingscript the message should be discarded
         logger.debug(
             _("No output file because mappingscript explicitly indicated this.")
         )
         out_translated.ta_info["filename"] = ""
-        out_translated.ta_info["status"] = DISCARD
+        out_translated.ta_info["status"] = TranslationStatus.DISCARD
     else:
         logger.debug(
             _(
@@ -353,4 +370,4 @@ def handle_out_message(out_translated, ta_translated):
         )  # get filesize
     ta_translated.update(
         **out_translated.ta_info
-    )  # update outmessage transaction with ta_info; statust = OK
+    )  # update outmessage transaction with ta_info; statust = TransactionStatus.OK

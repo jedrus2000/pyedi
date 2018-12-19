@@ -13,7 +13,6 @@ from pyedi.botslib import (
     InMessageError,
     checkconfirmrules,
     botsimport,
-    readdata_bin,
     logger,
     logmap,
     runscript,
@@ -37,10 +36,8 @@ class Edifact(Var):
         """ read content of edifact file in memory.
             is read as binary. In _sniff determine charset; then decode according to charset
         """
-        logger.debug('Read edi file "%(filename)s".', self.ta_info)
-        self.rawinput = readdata_bin(
-            filename=self.ta_info["filename"]
-        )  # read as binary
+        logger.debug('Read edi file from: "%(in)s".', {'in': self.filehandler})
+        self.rawinput = self.filehandler.read_binary()
 
     def _sniff(self):
         """ examine the beginning of edifact file for syntax parameters and charset. if (beginning of) edifact file is not correct: error.
@@ -300,7 +297,7 @@ class Edifact(Var):
                             )
                             % {"count": untcount}
                         )
-            logmap.debug("Parsing edifact envelopes is OK")
+            logmap.debug("Parsing edifact envelopes is TransactionStatus.OK")
 
     def handleconfirm(self, ta_fromfile, routedict, error):
         """ done at end of edifact file handling.
@@ -363,7 +360,7 @@ class Edifact(Var):
                 messagetype=tomessagetype,
                 filename=filename,
                 reference=reference,
-                statust=OK,
+                statust=TransactionStatus.OK,
             )  # make outmessage object
             out.ta_info["frompartner"] = receiver  # reverse!
             out.ta_info["topartner"] = sender  # reverse!

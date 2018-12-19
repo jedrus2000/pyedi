@@ -1,22 +1,41 @@
+"""
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    ttp://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
+"""
 # -*- coding: utf-8 -*-
 
 # constants/definitions for Bots
 # to be used as:
 # from botsconfig import *
 
+
 # ***for statust in ta:
-OPEN = 0  # Bots always closes transaction. OPEN is severe error
-ERROR = 1  # error in transaction.
-OK = (
-    2
-)  # successfull, result is 'save'. Should be picked up in same run. If automatic evaluation finds this: is 'stuck'.
-DONE = 3  # successfull, and result is picked up by next step
-RESEND = 4  # file has been resend.
-NO_RETRY = 5  # file has been resend.
+class TransactionStatus:
+    # ***for statust in ta:
+    OPEN = 0  # Bots always closes transaction. TransactionStatus.OPEN is severe error
+    ERROR = 1  # error in transaction.
+    OK = (
+        2
+    )  # successfull, result is 'save'. Should be picked up in same run. If automatic evaluation finds this: is 'stuck'.
+    DONE = 3  # successfull, and result is picked up by next step
+    RESEND = 4  # file has been resend.
+    NO_RETRY = 5  # file has been resend.
+
 
 # ***for status in ta:
-PROCESS = 1
-DISCARD = 3
+class TranslationStatus:
+    PROCESS = 1
+    DISCARD = 3
 
 EXTERNIN = 200  # file is imported into bots
 FILEIN = 220  # received edifile

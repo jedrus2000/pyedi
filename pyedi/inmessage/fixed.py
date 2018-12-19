@@ -11,7 +11,6 @@ from gettext import gettext as _
 
 from pyedi.botslib.consts import *
 from pyedi.botslib import (
-    opendata,
     get_relevant_text_for_UnicodeError,
     InMessageError,
     logger,
@@ -27,12 +26,16 @@ class Fixed(InMessage):
         """ open the edi file.
         """
         logger.debug('Read edi file "%(filename)s".', self.ta_info)
+        # TODO - to delete
+        """
         self.filehandler = opendata(
             filename=self.ta_info["filename"],
             mode="rb",
             charset=self.ta_info["charset"],
             errors=self.ta_info["checkcharsetin"],
         )
+        """
+        self.filehandler.current_key = self.ta_info["filename"]
 
     def _lex(self):
         """ edi file->self.lex_records."""

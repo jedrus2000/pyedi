@@ -1,0 +1,8 @@
+- DB implementation - marked as TODO
+- lookup_translation implementation- marked as TODO
+
+- TemplateHtml = _write(self, node_instance): TODO
+
+- added ta_info['edi_storage'] - EDI storage service - to access data with messages  whose abstract class is in botslib/storage.py
+
+

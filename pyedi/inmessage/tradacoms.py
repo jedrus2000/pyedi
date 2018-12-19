@@ -1,3 +1,17 @@
+"""
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    ttp://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
+"""
 try:
     from xml.etree import cElementTree as ET
 except ImportError:
@@ -55,5 +69,5 @@ class Tradacoms(Var):
                         _('[E25]: Count of segments in MTR is invalid: "%(count)s".\n')
                         % {"count": mtrcount}
                     )
-            logmap.debug("Parsing tradacoms envelopes is OK")
+            logmap.debug("Parsing tradacoms envelopes is TransactionStatus.OK")
 

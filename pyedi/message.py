@@ -1,4 +1,17 @@
-# -*- coding: utf-8 -*-
+"""
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    ttp://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
+"""
 from gettext import gettext as _
 
 from pyedi.botslib.consts import *
@@ -22,6 +35,7 @@ from pyedi.botslib import (
     config,
     logger,
     runscript,
+    EdiStorage,
 )
 import pyedi.node as node
 import pyedi.grammar as grammar
@@ -42,6 +56,8 @@ class Message(object):
         )  # store fatal errors: errors that stop the processing of the file
         self.messagetypetxt = ""  # used in reporting errors.
         self.messagecount = 0  # count messages in edi file; used in reporting errors.
+        # storage for accessing data (i.e. files)
+        self._edi_storage: EdiStorage = ta_info['edi_storage']
 
     def add2errorlist(self, errortxt):
         """ Handle non-fatal parse errors.
@@ -215,7 +231,7 @@ class Message(object):
             for field_definition in record_definition[FIELDS]:
                 if field_definition[ISFIELD]:  # if field (no composite)
                     if field == field_definition[ID]:
-                        break  # OK!
+                        break  # TransactionStatus.OK!
                 else:  # if composite
                     if field_definition[MAXREPEAT] == 1:  # non-repeating composite
                         for grammarsubfield in field_definition[
@@ -228,7 +244,7 @@ class Message(object):
                         break  # break out of field_definition-for-loop
                     else:  # repeating composite
                         if field == field_definition[ID]:
-                            # OK. Contents is a list of dicts;
+                            # TransactionStatus.OK. Contents is a list of dicts;
                             # TODO: check for each dict if sub-fields exist in grammar.
                             break
             else:  # field not found in grammar

@@ -1,3 +1,17 @@
+"""
+This is modified code of Bots project:
+    http://bots.sourceforge.net/en/index.shtml
+    ttp://bots.readthedocs.io
+    https://github.com/eppye-bots/bots
+
+originally created by Henk-Jan Ebbers.
+
+This code include also changes from other forks, specially from:
+    https://github.com/bots-edi
+
+This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Version 3; for full
+text: http://www.gnu.org/copyleft/gpl.html
+"""
 from .database import (query, changeq)
 from .consts import *
 
@@ -42,7 +56,7 @@ def set_asked_confirmrules(routedict, rootidta):
                                 AND status=%(status)s
                                 AND statust=%(statust)s
                                 AND (editype='edifact' OR editype='x12') """,
-        {"status": FILEOUT, "statust": OK, "rootidta": rootidta},
+        {"status": FILEOUT, "statust": TransactionStatus.OK, "rootidta": rootidta},
     ):
         if row[str("editype")] == "x12":
             if row[str("messagetype")][:3] in ["997", "999"]:
