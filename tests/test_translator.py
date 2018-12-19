@@ -13,6 +13,8 @@ This project, as original Bots is licenced under GNU GENERAL PUBLIC LICENSE Vers
 text: http://www.gnu.org/copyleft/gpl.html
 """
 import sys
+import os
+from pathlib import Path
 import unittest
 import logging
 
@@ -26,6 +28,8 @@ from pyedi.botslib import (
 
 from pyedi.translator import _translate_one_file
 
+RESOURCES_PATH = Path(os.path.dirname(os.path.realpath(__file__)), 'resources')
+
 
 class TestTranslator(unittest.TestCase):
     def setUp(self):
@@ -37,7 +41,7 @@ class TestTranslator(unittest.TestCase):
         row = {'testindicator': u'',
                'charset': u'',
                'messagetype': u'x12',
-               'filename': '../resources/x12/nb38fd80_corrected.edi',
+               'filename': Path(RESOURCES_PATH, 'x12', 'nb38fd80_corrected.edi'),
                'edi_storage': FileSystemStorage(),
                'fromchannel': u'att_in_our_server',
                'frompartner': u'',
